@@ -27,12 +27,18 @@ public class LogsSistemaDAO {
     public static List<String> obtenerTodosLosLogs() {
         List<String> logs = new ArrayList<>();
         String sql = """
-                SELECT ls.id, u.usuario_id, p.nombres, p.apellidos, ls.accion, ls.fecha
-                FROM logs_sistema ls
-                JOIN usuarios u ON ls.usuario_id = u.usuario_id
-                JOIN personas p ON u.persona_id = p.persona_id
-                ORDER BY ls.fecha DESC
-                """;
+            SELECT 
+                ls.id AS log_id, 
+                u.id AS usuario_id, 
+                p.nombres, 
+                p.apellidos, 
+                ls.accion, 
+                ls.fecha
+            FROM logs_sistema ls
+            JOIN usuarios u ON ls.usuario_id = u.id
+            JOIN personas p ON u.persona_id = p.id
+            ORDER BY ls.fecha DESC
+            """;
 
         try (Connection conn = ConexionRailway.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -54,4 +60,5 @@ public class LogsSistemaDAO {
 
         return logs;
     }
+
 }

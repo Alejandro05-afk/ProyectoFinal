@@ -4,11 +4,14 @@ import Controlador.IdeaNegocioController;
 import Controlador.MentoriaController;
 import Controlador.UsuarioController;
 import Modelo.IdeaNegocio;
-import Modelo.Persona;
 import Modelo.UsuarioCompleto;
+import Controlador.LogSistemaController;
+
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class DashboardAdmin extends JFrame {
@@ -140,51 +143,92 @@ public class DashboardAdmin extends JFrame {
             cargarIdeas();
         });
 
-        salirButton.addActionListener(e -> dispose());
+
+        salirButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int opcion = JOptionPane.showConfirmDialog(
+                        null,
+                        "¿Estás seguro de que deseas salir?",
+                        "Confirmar salida",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (opcion == JOptionPane.YES_OPTION) {
+                    new Login();
+                    dispose();
+                }
+                // Si elige NO, no hace nada
+            }
+        });
+
 
         setVisible(true);
     }
 
     private void cargarUsuarios() {
+        // Crear instancia del controlador
+        UsuarioController usuarioController = new UsuarioController();
+
+        // Llamar al método no estático
         List<UsuarioCompleto> usuarios = usuarioController.listarUsuariosConRol();
-        DefaultTableModel model = new DefaultTableModel(
-                new Object[]{"ID", "Nombres", "Apellidos", "Correo", "Rol"}, 0);
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new Object[]{"ID", "Nombres", "Apellidos", "Correo", "Teléfono", "Dirección", "Rol"});
+
         for (UsuarioCompleto u : usuarios) {
             model.addRow(new Object[]{
-                    u.getPersonaId(),
+                    u.getId(),
                     u.getNombres(),
                     u.getApellidos(),
                     u.getCorreo(),
+                    u.getTelefono(),    // Asegúrate que UsuarioCompleto tiene estos campos
+                    u.getDireccion(),
                     u.getRol()
             });
         }
+
         tableUsuarios.setModel(model);
     }
 
 
+
     private void cargarIdeas() {
-        List<IdeaNegocio> ideas = ideaNegocioController.listarIdeas();
-        DefaultTableModel model = new DefaultTableModel(
-                new Object[]{"ID", "Usuario", "Categoría", "Título", "Descripción", "Estado"}, 0);
+        String[] columnas = {"ID", "Usuario", "Categoría", "Título", "Descripción", "Estado"};
+        DefaultTableModel model = new DefaultTableModel(columnas, 0);
+
+        List<IdeaNegocio> ideas = IdeaNegocioController.listarIdeas();
+
         for (IdeaNegocio idea : ideas) {
-            model.addRow(new Object[]{
+            Object[] fila = {
                     idea.getId(),
                     idea.getUsuarioId(),
                     idea.getCategoriaId(),
                     idea.getTitulo(),
                     idea.getDescripcion(),
                     idea.getEstado()
-            });
+            };
+            model.addRow(fila);
         }
+
         tableIdeas.setModel(model);
     }
 
+
     private void cargarLogs() {
+        List<String> logs = LogSistemaController.obtenerLogsComoTexto();
+
         DefaultListModel<String> model = new DefaultListModel<>();
-        List<String> logs = ideaNegocioController.obtenerLogs();
         for (String log : logs) {
             model.addElement(log);
         }
+
         listLogs.setModel(model);
+        listLogs.repaint();
+        listLogs.revalidate();
     }
+
+
+
 }

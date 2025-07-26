@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class CrearCuenta extends JFrame {
     private JButton registrarButton;
-    private JButton iniciarSesiónButton;
+    private JButton regresarButton;
     private JTextField textFieldNombre;
     private JTextField textFieldApellido;
     private JTextField textFieldCorreo;
@@ -26,19 +26,29 @@ public class CrearCuenta extends JFrame {
         setVisible(true);
 
         registrarButton.addActionListener(e -> {
+            // Llamar al controlador para registrar
             RegistroController.registrarCuenta(
                     textFieldNombre.getText(),
                     textFieldApellido.getText(),
                     textFieldCorreo.getText(),
                     textFieldTelefono.getText(),
                     textFieldDireccion.getText(),
-
                     new String(passwordFieldContra.getPassword()),
                     comboBoxRol.getSelectedItem().toString()
             );
+
+            // Limpiar los campos después del registro
+            textFieldNombre.setText("");
+            textFieldApellido.setText("");
+            textFieldCorreo.setText("");
+            textFieldTelefono.setText("");
+            textFieldDireccion.setText("");
+            passwordFieldContra.setText("");
+            comboBoxRol.setSelectedIndex(0); // O el índice que prefieras como "Por defecto"
         });
 
-        iniciarSesiónButton.addActionListener(e -> {
+
+        regresarButton.addActionListener(e -> {
             dispose();
             new Login();
         });

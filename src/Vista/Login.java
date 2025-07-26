@@ -26,6 +26,7 @@ public class Login extends JFrame {
             String rol = comboBoxRol.getSelectedItem().toString();
 
             LoginController.iniciarSesion(correo, contraseña, rol);
+            dispose();
         });
 
         crearCuentaButton.addActionListener(e -> {

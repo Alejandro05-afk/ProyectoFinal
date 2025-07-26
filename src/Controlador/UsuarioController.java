@@ -25,7 +25,7 @@ public class UsuarioController {
     }
 
     // Listar solo personas (sin rol)
-    public List<Persona> listar() {
+    public List<Persona> listarUsuarios() {
         return usuarioDAO.listarUsuarios();
     }
 

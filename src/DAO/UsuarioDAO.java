@@ -11,7 +11,7 @@ import java.util.List;
 
 public class UsuarioDAO {
 
-    // Insertar un nuevo usuario
+    // Insertar un nuevo usuario (en tabla usuarios)
     public boolean insertarUsuario(Usuario usuario) {
         String sql = "INSERT INTO usuarios (persona_id, contraseña, tipo_usuario) VALUES (?, ?, ?)";
 
@@ -20,7 +20,7 @@ public class UsuarioDAO {
 
             ps.setInt(1, usuario.getPersonaId());
             ps.setString(2, usuario.getContraseña());
-            ps.setString(3, usuario.getRol());  // En BD es tipo_usuario
+            ps.setString(3, usuario.getRol());
 
             return ps.executeUpdate() > 0;
 
@@ -67,7 +67,7 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // Obtener usuario por personaId (importante para obtener rol desde Persona)
+    // Obtener usuario por personaId (para obtener rol y contraseña)
     public Usuario obtenerPorPersonaId(int personaId) {
         Usuario usuario = null;
         String sql = "SELECT * FROM usuarios WHERE persona_id = ?";
@@ -93,7 +93,7 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // Listar personas sin rol (puedes usar para mostrar datos sin rol)
+    // Listar personas (sin rol)
     public List<Persona> listarUsuarios() {
         List<Persona> usuarios = new ArrayList<>();
 
@@ -125,7 +125,7 @@ public class UsuarioDAO {
         return usuarios;
     }
 
-    // Buscar persona por nombre (sin rol, si quieres rol usa buscarPorNombreConRol)
+    // Buscar persona por nombre (sin rol)
     public Persona buscarPorNombre(String nombre) {
         String sql = """
             SELECT p.id, p.nombres, p.apellidos, p.correo, p.telefono, p.direccion
@@ -158,7 +158,7 @@ public class UsuarioDAO {
         return null;
     }
 
-    // Buscar persona con rol por nombre
+    // Buscar persona con rol por nombre (solo devuelve 1 resultado)
     public UsuarioCompleto buscarPorNombreConRol(String nombre) {
         String sql = """
             SELECT p.id, p.nombres, p.apellidos, p.correo, u.tipo_usuario
@@ -176,9 +176,12 @@ public class UsuarioDAO {
                 if (rs.next()) {
                     return new UsuarioCompleto(
                             rs.getInt("id"),
+                            rs.getInt("id"),   // personaId igual a id persona
                             rs.getString("nombres"),
                             rs.getString("apellidos"),
                             rs.getString("correo"),
+                            rs.getString("Telefono"),
+                            rs.getString("direccion"),
                             rs.getString("tipo_usuario")
                     );
                 }
@@ -191,14 +194,12 @@ public class UsuarioDAO {
         return null;
     }
 
-    // Editar un campo (en personas o usuarios según corresponda)
+    // Editar un campo (puede ser en personas o usuarios)
     public void editarCampo(int personaId, String campo, String nuevoValor) {
         String sql;
         if (campo.equalsIgnoreCase("contraseña") || campo.equalsIgnoreCase("tipo_usuario")) {
-            // Editar en tabla usuarios
             sql = "UPDATE usuarios SET " + campo + " = ? WHERE persona_id = ?";
         } else {
-            // Editar en tabla personas
             sql = "UPDATE personas SET " + campo + " = ? WHERE id = ?";
         }
 
@@ -234,10 +235,14 @@ public class UsuarioDAO {
         }
     }
 
-    // Listar usuarios con rol completo (para mostrar en tablas, etc)
+    // Listar usuarios completos (persona + rol)
     public List<UsuarioCompleto> listarUsuariosConRol() {
         List<UsuarioCompleto> lista = new ArrayList<>();
-        String sql = "SELECT p.id, p.nombres, p.apellidos, p.correo, u.tipo_usuario FROM personas p JOIN usuarios u ON p.id = u.persona_id";
+        String sql = """
+            SELECT p.id, p.nombres, p.apellidos, p.correo, p.telefono, p.direccion, u.tipo_usuario
+            FROM personas p
+            JOIN usuarios u ON p.id = u.persona_id
+        """;
 
         try (Connection conn = ConexionRailway.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -246,9 +251,12 @@ public class UsuarioDAO {
             while (rs.next()) {
                 UsuarioCompleto u = new UsuarioCompleto(
                         rs.getInt("id"),
+                        rs.getInt("id"),  // personaId igual al id persona
                         rs.getString("nombres"),
                         rs.getString("apellidos"),
                         rs.getString("correo"),
+                        rs.getString("telefono"),
+                        rs.getString("direccion"),
                         rs.getString("tipo_usuario")
                 );
                 lista.add(u);
