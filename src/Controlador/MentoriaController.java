@@ -2,6 +2,7 @@ package Controlador;
 
 import DAO.MentoriaDAO;
 import Modelo.Mentor;
+import Modelo.Mentoria;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,5 +23,14 @@ public class MentoriaController {
     // Asignar mentor a una idea (crear entrada en la tabla mentorias)
     public static void asignar(int ideaId, int mentorId) {
         MentoriaDAO.asignarMentoria(ideaId, mentorId);
+    }
+    // Crear una nueva mentoría
+    public static void crearMentoria(int ideaId, int mentorId, String fecha) {
+        MentoriaDAO.insertarMentoria(ideaId, mentorId, fecha);
+    }
+
+    // Listar todas las mentorías asignadas a un mentor
+    public static List<Mentoria> obtenerMentoriasPorMentor(int mentorId) {
+        return MentoriaDAO.obtenerMentoriasPorMentor(mentorId);
     }
 }

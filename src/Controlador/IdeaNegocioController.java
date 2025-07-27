@@ -19,7 +19,7 @@ public class IdeaNegocioController {
     public static boolean eliminar(int id) {
         boolean eliminado = IdeaNegocioDAO.eliminar(id);
         if (eliminado) {
-            LogsSistemaDAO.insertarLog(0, "Eliminó la idea con ID " + id); // Idealmente pasar usuario real
+            LogsSistemaDAO.insertarLog(0, "Eliminó la idea con ID " + id); // Reemplaza 0 por el usuario real si lo tienes
         }
         return eliminado;
     }
@@ -50,5 +50,9 @@ public class IdeaNegocioController {
 
     public static List<String> obtenerLogs() {
         return LogsSistemaDAO.obtenerTodosLosLogs();
+    }
+
+    public static List<IdeaNegocio> obtenerIdeasPorMentor(int mentorId) {
+        return IdeaNegocioDAO.obtenerIdeasAsignadasAlMentor(mentorId);
     }
 }

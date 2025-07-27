@@ -1,20 +1,29 @@
 package Modelo;
 
 public class Mentor {
-    private int id;
+    private int mentorId;      // ID en la tabla 'mentores'
+    private int personaId;     // ID en la tabla 'personas'
     private String nombres;
     private String apellidos;
     private String especialidad;
 
-    public Mentor(int id, String nombres, String apellidos, String especialidad) {
-        this.id = id;
+    // Constructor
+    public Mentor(int mentorId, int personaId, String nombres, String apellidos, String especialidad) {
+        this.mentorId = mentorId;
+        this.personaId = personaId;
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.especialidad = especialidad;
     }
 
+    // Devuelve el ID de mentor
     public int getId() {
-        return id;
+        return mentorId;
+    }
+
+    // Devuelve el ID de persona
+    public int getPersonaId() {
+        return personaId;
     }
 
     public String getNombres() {
@@ -35,6 +44,6 @@ public class Mentor {
 
     @Override
     public String toString() {
-        return id + " - " + getNombreCompleto() + " (" + especialidad + ")";
+        return mentorId + " - " + getNombreCompleto() + " (" + especialidad + ")";
     }
 }
