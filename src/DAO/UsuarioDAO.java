@@ -159,40 +159,42 @@ public class UsuarioDAO {
     }
 
     // Buscar persona con rol por nombre (solo devuelve 1 resultado)
-    public UsuarioCompleto buscarPorNombreConRol(String nombre) {
-        String sql = """
-            SELECT p.id, p.nombres, p.apellidos, p.correo, u.tipo_usuario
-            FROM personas p
-            JOIN usuarios u ON p.id = u.persona_id
-            WHERE LOWER(p.nombres) LIKE LOWER(?)
-            LIMIT 1
-        """;
+    public static List<UsuarioCompleto> buscarPorNombreConRol(String nombre) {
+        List<UsuarioCompleto> lista = new ArrayList<>();
+
+        String sql = "SELECT u.id, u.persona_id, p.nombres, p.apellidos, p.correo, p.telefono, p.direccion, u.tipo_usuario " +
+                "FROM usuarios u " +
+                "JOIN personas p ON u.persona_id = p.id " +
+                "WHERE p.nombres ILIKE ?";
 
         try (Connection conn = ConexionRailway.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, "%" + nombre + "%");
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new UsuarioCompleto(
-                            rs.getInt("id"),
-                            rs.getInt("id"),   // personaId igual a id persona
-                            rs.getString("nombres"),
-                            rs.getString("apellidos"),
-                            rs.getString("correo"),
-                            rs.getString("Telefono"),
-                            rs.getString("direccion"),
-                            rs.getString("tipo_usuario")
-                    );
-                }
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                UsuarioCompleto usuario = new UsuarioCompleto(
+                        rs.getInt("id"),
+                        rs.getInt("persona_id"),
+                        rs.getString("nombres"),
+                        rs.getString("apellidos"),
+                        rs.getString("correo"),
+                        rs.getString("telefono"),
+                        rs.getString("direccion"),
+                        rs.getString("tipo_usuario")
+                );
+                lista.add(usuario);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return lista;
     }
+
 
     // Editar un campo (puede ser en personas o usuarios)
     public void editarCampo(int personaId, String campo, String nuevoValor) {
@@ -234,6 +236,8 @@ public class UsuarioDAO {
             e.printStackTrace();
         }
     }
+
+
 
     // Listar usuarios completos (persona + rol)
     public List<UsuarioCompleto> listarUsuariosConRol() {

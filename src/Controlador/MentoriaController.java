@@ -33,4 +33,8 @@ public class MentoriaController {
     public static List<Mentoria> obtenerMentoriasPorMentor(int mentorId) {
         return MentoriaDAO.obtenerMentoriasPorMentor(mentorId);
     }
+    public static int obtenerMentoriaIdPorIdea(int ideaId) {
+        return MentoriaDAO.obtenerMentoriaIdPorIdea(ideaId);
+    }
+
 }

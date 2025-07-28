@@ -2,6 +2,7 @@ package Controlador;
 
 import DAO.IdeaNegocioDAO;
 import DAO.LogsSistemaDAO;
+import Modelo.Categoria;
 import Modelo.IdeaNegocio;
 
 import java.util.List;
@@ -12,6 +13,10 @@ public class IdeaNegocioController {
         return IdeaNegocioDAO.listarIdeas();
     }
 
+    public static List<IdeaNegocio> listarIdeasPorUsuario(int usuarioId) {
+        return IdeaNegocioDAO.listarIdeasPorUsuario(usuarioId);
+    }
+
     public static IdeaNegocio buscarPorId(int id) {
         return IdeaNegocioDAO.buscarPorId(id);
     }
@@ -19,7 +24,7 @@ public class IdeaNegocioController {
     public static boolean eliminar(int id) {
         boolean eliminado = IdeaNegocioDAO.eliminar(id);
         if (eliminado) {
-            LogsSistemaDAO.insertarLog(0, "Eliminó la idea con ID " + id); // Reemplaza 0 por el usuario real si lo tienes
+            LogsSistemaDAO.insertarLog(0, "Eliminó la idea con ID " + id); // Reemplaza 0 por ID real si está disponible
         }
         return eliminado;
     }
@@ -55,4 +60,17 @@ public class IdeaNegocioController {
     public static List<IdeaNegocio> obtenerIdeasPorMentor(int mentorId) {
         return IdeaNegocioDAO.obtenerIdeasAsignadasAlMentor(mentorId);
     }
+
+    public static boolean registrarIdea(int usuarioId, int categoriaId, String titulo, String descripcion) {
+        return IdeaNegocioDAO.registrarIdea(usuarioId, categoriaId, titulo, descripcion);
+    }
+
+    public static List<Categoria> listarCategorias() {
+        return IdeaNegocioDAO.obtenerCategorias();
+    }
+
+    public static int obtenerUsuarioIdPorIdea(int ideaId) {
+        return IdeaNegocioDAO.obtenerUsuarioIdPorIdea(ideaId);
+    }
+
 }

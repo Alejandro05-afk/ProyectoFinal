@@ -3,6 +3,7 @@ package Vista;
 import Controlador.IdeaNegocioController;
 import Controlador.MentoriaController;
 import Controlador.UsuarioController;
+import DAO.LogsSistemaDAO;
 import Modelo.IdeaNegocio;
 import Modelo.UsuarioCompleto;
 import Controlador.LogSistemaController;
@@ -30,16 +31,23 @@ public class DashboardAdmin extends JFrame {
     private JButton resultadosButton;
     private JButton estadisticasButton;
     private JButton salirButton;
+    private JScrollPane ScrollTableUsuarios;
+    private int usuarioActualId;
 
     // Crea instancias de los controladores
     private UsuarioController usuarioController = new UsuarioController();
     private IdeaNegocioController ideaNegocioController = new IdeaNegocioController();
     private MentoriaController mentoriaController = new MentoriaController();
 
-    public DashboardAdmin() {
+    public DashboardAdmin(int usuarioId) {
+        this.usuarioActualId = usuarioId;
+        // innecesario si ya está en el JScrollPane
+        ScrollTableUsuarios.setViewportView(tableUsuarios);
+
+
         setContentPane(panelAdmin);
         setTitle("Administrador");
-        setSize(800, 600);
+        setSize(600, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -50,20 +58,27 @@ public class DashboardAdmin extends JFrame {
 
         // ------------------ EVENTOS ------------------
 
-        crearButton.addActionListener(e -> new CrearCuenta());
+        crearButton.addActionListener(e -> {
+            new CrearCuentaDesdeAdmin(usuarioId);
+            dispose();
+        });
+
 
         buscarButton.addActionListener(e -> {
             String nombre = JOptionPane.showInputDialog("Nombre:");
-            UsuarioCompleto u = usuarioController.buscarPorNombreConRol(nombre);
-            if (u != null) {
+            List<UsuarioCompleto> usuarios = usuarioController.buscarPorNombreConRol(nombre);
+            if (usuarios != null && !usuarios.isEmpty()) {
                 DefaultTableModel model = new DefaultTableModel(
                         new Object[]{"ID", "Nombres", "Apellidos", "Correo", "Rol"}, 0);
-                model.addRow(new Object[]{u.getPersonaId(), u.getNombres(), u.getApellidos(), u.getCorreo(), u.getRol()});
+                for (UsuarioCompleto u : usuarios) {
+                    model.addRow(new Object[]{u.getPersonaId(), u.getNombres(), u.getApellidos(), u.getCorreo(), u.getRol()});
+                }
                 tableUsuarios.setModel(model);
             } else {
                 JOptionPane.showMessageDialog(null, "Usuario no encontrado");
             }
         });
+
 
 
         editarButton.addActionListener(e -> {
@@ -78,10 +93,31 @@ public class DashboardAdmin extends JFrame {
         });
 
         eliminarButton.addActionListener(e -> {
-            int id = Integer.parseInt(JOptionPane.showInputDialog("ID a eliminar:"));
-            usuarioController.eliminar(id);
-            cargarUsuarios();
+            int row = tableUsuarios.getSelectedRow();
+            if (row >= 0) {
+                int personaId = Integer.parseInt(tableUsuarios.getValueAt(row, 0).toString());
+
+                int confirm = JOptionPane.showConfirmDialog(
+                        null,
+                        "¿Estás seguro de que deseas eliminar este usuario?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    usuarioController.eliminarUsuario(personaId);
+
+                    // Registrar log de eliminación, usando usuarioActualId
+                    LogsSistemaDAO.insertarLog(usuarioActualId, "Eliminó usuario con persona_id = " + personaId);
+
+                    cargarUsuarios();
+                    JOptionPane.showMessageDialog(null, "Usuario eliminado correctamente.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecciona un usuario para eliminar.");
+            }
         });
+
 
         buscarButton1.addActionListener(e -> {
             int id = Integer.parseInt(JOptionPane.showInputDialog("ID de la idea:"));

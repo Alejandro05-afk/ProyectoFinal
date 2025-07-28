@@ -79,10 +79,12 @@ public class LoginController {
 
     private static void lanzarDashboard(Usuario usuario) {
         switch (usuario.getRol().toLowerCase()) {
-            case "administrador" -> new DashboardAdmin().setVisible(true);
-            case "emprendedor" -> new DashboardEmprendedor().setVisible(true);
-            case "mentor" -> new DashboardMentor(usuario).setVisible(true);  // Aquí pasamos el usuario al constructor
+            case "administrador" -> new DashboardAdmin(usuario.getId()).setVisible(true);
+            case "emprendedor" -> new DashboardEmprendedor(usuario.getId()).setVisible(true);
+            case "mentor" -> new DashboardMentor(usuario).setVisible(true);
             default -> JOptionPane.showMessageDialog(null, "Rol desconocido");
         }
     }
+
+
 }

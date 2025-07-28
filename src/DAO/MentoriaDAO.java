@@ -203,4 +203,26 @@ public class MentoriaDAO {
 
         return lista;
     }
+
+    public static int obtenerMentoriaIdPorIdea(int ideaId) {
+        String sql = "SELECT id FROM mentorias WHERE idea_id = ? ORDER BY fecha DESC LIMIT 1";
+        int mentoriaId = -1;
+
+        try (Connection conn = ConexionRailway.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, ideaId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                mentoriaId = rs.getInt("id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return mentoriaId;
+    }
+
 }

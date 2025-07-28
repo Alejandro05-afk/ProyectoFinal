@@ -14,6 +14,7 @@ public class ResultadoController {
 
     // Devuelve una lista de resultados en formato String para mostrar en el DashboardMentor
     public static List<String> obtenerResultadosDelMentor(int usuarioId) {
-        return ResultadoDAO.obtenerResultadosPorUsuario(usuarioId);
+        return ResultadoDAO.obtenerResultadosDelMentor(usuarioId);
     }
+
 }

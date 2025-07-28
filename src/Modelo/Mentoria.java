@@ -1,11 +1,15 @@
 package Modelo;
 
-import java.sql.Timestamp;
-
 public class Mentoria {
     private int id, ideaId, mentorId;
-    private String fecha, estado;
+    private String fecha;  // Si quieres mantener fecha como String
+    private String estado;
 
+    // Constructor vacío
+    public Mentoria() {
+    }
+
+    // Constructor con parámetros
     public Mentoria(int id, int ideaId, int mentorId, String fecha, String estado) {
         this.id = id;
         this.ideaId = ideaId;
@@ -14,28 +18,13 @@ public class Mentoria {
         this.estado = estado;
     }
 
-    public String getEstado() {
-        return estado;
+    // Getters y setters
+    public int getId() {
+        return id;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
-    }
-
-    public int getMentorId() {
-        return mentorId;
-    }
-
-    public void setMentorId(int mentorId) {
-        this.mentorId = mentorId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getIdeaId() {
@@ -46,14 +35,27 @@ public class Mentoria {
         this.ideaId = ideaId;
     }
 
-    public int getId() {
-        return id;
+    public int getMentorId() {
+        return mentorId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMentorId(int mentorId) {
+        this.mentorId = mentorId;
     }
 
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 }
-
-

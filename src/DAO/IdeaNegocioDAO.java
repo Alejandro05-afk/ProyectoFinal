@@ -2,6 +2,7 @@ package DAO;
 
 import Conexion.ConexionRailway;
 import Modelo.IdeaNegocio;
+import Modelo.Categoria;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -154,7 +155,7 @@ public class IdeaNegocioDAO {
     public static List<String> obtenerEstadisticasPorIdea(int ideaId) {
         List<String> estadisticas = new ArrayList<>();
         String sql = """
-            SELECT ei.id, ei.fase, ei.mentoria_id
+            SELECT ei.id, ei.avance_fase_id, ei.mentoria_id
             FROM estadisticas_idea ei
             JOIN mentorias m ON ei.mentoria_id = m.id
             WHERE m.idea_id = ?
@@ -168,11 +169,11 @@ public class IdeaNegocioDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int estadisticaId = rs.getInt("id");
-                    int faseId = rs.getInt("fase");
+                    int faseId = rs.getInt("avance_fase_id");
                     int mentoriaId = rs.getInt("mentoria_id");
 
                     estadisticas.add("Estadística ID: " + estadisticaId +
-                            ", Fase ID: " + faseId +
+                            ", avance_fase_id ID: " + faseId +
                             ", Mentoria ID: " + mentoriaId);
                 }
             }
@@ -219,4 +220,75 @@ public class IdeaNegocioDAO {
 
         return lista;
     }
+    public static boolean registrarIdea(int usuarioId, int categoriaId, String titulo, String descripcion) {
+        String sql = "INSERT INTO ideas_negocio(usuario_id, categoria_id, titulo, descripcion, estado) VALUES (?, ?, ?, ?, 1)";
+        try (Connection conn = ConexionRailway.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, usuarioId);
+            stmt.setInt(2, categoriaId);
+            stmt.setString(3, titulo);
+            stmt.setString(4, descripcion);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static List<Categoria> obtenerCategorias() {
+        List<Categoria> lista = new ArrayList<>();
+        String sql = "SELECT id, nombre FROM categorias";
+        try (Connection conn = ConexionRailway.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                lista.add(new Categoria(rs.getInt("id"), rs.getString("nombre")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+    public static List<IdeaNegocio> listarIdeasPorUsuario(int usuarioId) {
+        List<IdeaNegocio> lista = new ArrayList<>();
+        String sql = "SELECT * FROM ideas_negocio WHERE usuario_id = ?";
+        try (Connection conn = ConexionRailway.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, usuarioId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                lista.add(new IdeaNegocio(
+                        rs.getInt("id"),
+                        rs.getInt("usuario_id"),
+                        rs.getInt("categoria_id"),
+                        rs.getString("titulo"),
+                        rs.getString("descripcion"),
+                        rs.getString("estado") // O int si es entero
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+    public static int obtenerUsuarioIdPorIdea(int ideaId) {
+        int usuarioId = -1;
+        String sql = "SELECT usuario_id FROM ideas_negocio WHERE id = ?";
+
+        try (Connection conn = ConexionRailway.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, ideaId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                usuarioId = rs.getInt("usuario_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usuarioId;
+    }
+
+
 }

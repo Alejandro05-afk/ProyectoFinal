@@ -20,6 +20,7 @@ public class DashboardMentor extends JFrame {
     private JButton estadisticasButton1;
     private JButton resultadosButton;
     private JButton agregarAvanceButton;
+
     private int mentorId;
     private Usuario mentor;
 
@@ -53,9 +54,19 @@ public class DashboardMentor extends JFrame {
         resultadosButton.addActionListener(e -> mostrarResultados());
         agregarAvanceButton.addActionListener(e -> agregarAvanceFase());
         salirButton.addActionListener(e -> {
-            dispose();
-            new Login();
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro que desea cerrar sesión?",
+                    "Confirmar salida",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                dispose();
+                new Login();
+            }
         });
+
     }
 
     private void cargarIdeasAsignadas() {
@@ -110,13 +121,29 @@ public class DashboardMentor extends JFrame {
 
         int ideaId = (int) tableideas.getValueAt(fila, 0);
 
-        int estadisticaId = EstadisticaController.generarEstadistica(ideaId);
+        // Obtener mentoría asociada a la idea (método debe existir en MentoriaController)
+        int mentoriaId = MentoriaController.obtenerMentoriaIdPorIdea(ideaId);
+        if (mentoriaId == -1) {
+            JOptionPane.showMessageDialog(this, "No se encontró una mentoría para esta idea.");
+            return;
+        }
+
+        // Obtener fase seleccionada con método propio
+        int faseId = obtenerFaseIdSeleccionada();
+        if (faseId == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una fase válida.");
+            return;
+        }
+
+        int estadisticaId = EstadisticaController.generarEstadistica(mentoriaId, faseId);
         if (estadisticaId == -1) {
             JOptionPane.showMessageDialog(this, "Error al generar la estadística.");
             return;
         }
 
-        int resultadoId = ResultadoController.registrarResultado(mentor.getId(), estadisticaId);
+        int usuarioIdDueño = IdeaNegocioController.obtenerUsuarioIdPorIdea(ideaId);
+        int resultadoId = ResultadoController.registrarResultado(usuarioIdDueño, estadisticaId);
+
         if (resultadoId == -1) {
             JOptionPane.showMessageDialog(this, "Error al registrar el resultado.");
             return;
@@ -130,9 +157,6 @@ public class DashboardMentor extends JFrame {
 
         JOptionPane.showMessageDialog(this, "Reporte generado y guardado correctamente.");
     }
-
-
-
 
     private void agregarObservacion() {
         int fila = tableMentorias.getSelectedRow();
@@ -231,5 +255,44 @@ public class DashboardMentor extends JFrame {
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Ingrese valores numéricos válidos.");
         }
+    }
+
+    // Método que obtienes el id de fase a partir del JComboBox o similar
+    private int obtenerFaseIdSeleccionada() {
+        // Obtiene la lista de fases disponibles desde el controlador
+        List<FaseProyecto> fases = EstadisticaController.listarFases();
+
+        if (fases.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay fases registradas en el sistema.");
+            return -1;
+        }
+
+        // Convierte la lista de fases a un arreglo de nombres para mostrar en el diálogo
+        String[] opciones = fases.stream()
+                .map(FaseProyecto::getNombre)
+                .toArray(String[]::new);
+
+        // Muestra un diálogo para que el usuario seleccione la fase
+        String seleccion = (String) JOptionPane.showInputDialog(
+                this,
+                "Seleccione la fase:",
+                "Fase",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                opciones,
+                opciones[0] // opción por defecto
+        );
+
+        // Si el usuario hizo una selección válida, busca y devuelve el ID de la fase
+        if (seleccion != null) {
+            return fases.stream()
+                    .filter(f -> f.getNombre().equals(seleccion))
+                    .findFirst()
+                    .map(FaseProyecto::getId)
+                    .orElse(-1);
+        }
+
+        // Si no seleccionó nada o canceló, devuelve -1
+        return -1;
     }
 }

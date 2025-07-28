@@ -20,9 +20,10 @@ public class UsuarioController {
     }
 
     // Buscar usuario con rol por nombre
-    public UsuarioCompleto buscarPorNombreConRol(String nombre) {
+    public List<UsuarioCompleto> buscarPorNombreConRol(String nombre) {
         return usuarioDAO.buscarPorNombreConRol(nombre);
     }
+
 
     // Listar solo personas (sin rol)
     public List<Persona> listarUsuarios() {
@@ -43,4 +44,9 @@ public class UsuarioController {
     public void eliminar(int personaId) {
         usuarioDAO.eliminarUsuario(personaId);
     }
+
+    public static void eliminarUsuario(int personaId) {
+        new UsuarioDAO().eliminarUsuario(personaId);
+    }
+
 }

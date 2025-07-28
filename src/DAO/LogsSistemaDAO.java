@@ -24,6 +24,22 @@ public class LogsSistemaDAO {
         }
     }
 
+    public static void registrarLog(int usuarioId, String accion) {
+        String sql = "INSERT INTO logs_sistema(usuario_id, accion, fecha) VALUES (?, ?, NOW())";
+
+        try (Connection conn = ConexionRailway.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, usuarioId);
+            stmt.setString(2, accion);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public static List<String> obtenerTodosLosLogs() {
         List<String> logs = new ArrayList<>();
         String sql = """
