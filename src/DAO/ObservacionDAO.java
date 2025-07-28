@@ -6,7 +6,9 @@ import Modelo.Observacion;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * DAO para gestionar las operaciones relacionadas con las observaciones.
+ */
 public class ObservacionDAO {
 
     /**

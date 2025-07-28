@@ -6,7 +6,9 @@ import Modelo.Persona;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
+/**
+ * DAO para gestionar las operaciones relacionadas con las personas.
+ */
 public class PersonaDAO {
 
     /**

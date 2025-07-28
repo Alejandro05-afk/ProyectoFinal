@@ -4,7 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import Conexion.ConexionRailway;
-
+/**
+ * DAO para gestionar las operaciones relacionadas con los resultados.
+ */
 public class ResultadoDAO {
 
     /**

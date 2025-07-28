@@ -8,7 +8,9 @@ import Modelo.UsuarioCompleto;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * DAO para gestionar las operaciones relacionadas con los usuarios.
+ */
 public class UsuarioDAO {
 
     /**

@@ -4,7 +4,9 @@ import Conexion.ConexionRailway;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-
+/**
+ * DAO para gestionar las operaciones relacionadas con los reportes.
+ */
 public class ReporteDAO {
 
     /**
