@@ -1,12 +1,18 @@
 package DAO;
+
 import Conexion.ConexionRailway;
-import Modelo.Persona;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 public class ReporteDAO {
+
+    /**
+     * Inserta un nuevo reporte asociado a un resultado específico.
+     *
+     * @param resultadoId El ID del resultado al cual se asocia el reporte.
+     * @return true si el reporte fue insertado correctamente; false en caso contrario.
+     */
     public static boolean insertarReporte(int resultadoId) {
         String sql = "INSERT INTO reportes (resultado_id) VALUES (?)";
 

@@ -12,7 +12,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Date;
 import java.util.List;
-
+/**
+ * Clase que representa el panel principal para el usuario con rol Emprendedor.
+ * Permite gestionar ideas, mentorías, avances, observaciones y fases de proyectos.
+ */
 public class DashboardEmprendedor extends JFrame {
     private JTabbedPane tabbedPane1;
     private JPanel panelEmprendedor;
@@ -31,13 +34,18 @@ public class DashboardEmprendedor extends JFrame {
     private JTextField textFieldFecha;
 
     private int usuarioId;
-
+    /**
+     * Constructor que inicializa el dashboard para el emprendedor con el ID dado.
+     * Configura la interfaz, carga datos y asigna listeners.
+     *
+     * @param usuarioId ID del usuario emprendedor autenticado.
+     */
     public DashboardEmprendedor(int usuarioId) {
         this.usuarioId = usuarioId;
 
         setContentPane(panelEmprendedor);
         setTitle("Dashboard Emprendedor");
-        setSize(800, 600);
+        setSize(500, 350);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -48,7 +56,10 @@ public class DashboardEmprendedor extends JFrame {
 
         setVisible(true);
     }
-
+    /**
+     * Configura todos los ActionListener para los botones y componentes.
+     * Aquí se define la lógica que se ejecuta al interactuar con la interfaz.
+     */
     private void agregarListeners() {
         guardarButton.addActionListener(e -> {
             try {
@@ -153,6 +164,9 @@ public class DashboardEmprendedor extends JFrame {
 
     }
 
+    /**
+     * Carga las ideas de negocio asociadas al usuario en la tabla correspondiente.
+     */
     private void cargarMisIdeas() {
         List<IdeaNegocio> ideas = IdeaNegocioController.listarIdeasPorUsuario(usuarioId);
         DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Título", "Descripción", "Estado"}, 0);
@@ -166,7 +180,9 @@ public class DashboardEmprendedor extends JFrame {
         }
         tableMisIdeas.setModel(model);
     }
-
+    /**
+     * Carga las fases de proyecto disponibles en el comboBox para selección.
+     */
     private void cargarComboFases() {
         List<FaseProyecto> fases = EstadisticaController.listarFases();
         comboBoxFase.removeAllItems();
@@ -174,7 +190,9 @@ public class DashboardEmprendedor extends JFrame {
             comboBoxFase.addItem(f.getNombre());
         }
     }
-
+    /**
+     * Carga las mentorías relacionadas al usuario y las muestra en la lista.
+     */
     private void cargarMentorias() {
         List<Mentoria> mentorias = EstadisticaController.listarMentoriasPorUsuario(usuarioId);
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -183,7 +201,10 @@ public class DashboardEmprendedor extends JFrame {
         }
         listMentorias.setModel(model);
     }
-
+    /**
+     * Asigna una fase a la mentoría seleccionada en la lista.
+     * Muestra un diálogo para seleccionar la fase y actualiza el sistema.
+     */
     private void asignarFase() {
         int selectedIndex = listMentorias.getSelectedIndex();
         if (selectedIndex == -1) {

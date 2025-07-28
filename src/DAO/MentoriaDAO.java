@@ -12,7 +12,9 @@ import java.util.List;
 
 public class MentoriaDAO {
 
-    // Obtener todos los mentores con su información personal y especialidad
+    /**
+     * Obtiene la lista de mentores con sus datos personales y especialidad.
+     */
     public static List<Mentor> obtenerMentores() {
         List<Mentor> mentores = new ArrayList<>();
         String sql = """
@@ -42,40 +44,49 @@ public class MentoriaDAO {
         return mentores;
     }
 
-    // Asignar mentor a una idea de negocio (cambia estado de idea a 'aprobado')
+
+    /**
+     * Asigna un mentor a una idea de negocio creando una nueva mentoría.
+     * Cambia el estado de la idea a 'aprobado'.
+     *
+     */
     public static void asignarMentoria(int ideaId, int mentorId) {
         int estadoId = obtenerEstadoId("pendiente");
 
         if (estadoId == -1) {
-            System.out.println(" Estado 'pendiente' no encontrado.");
+            System.out.println("Estado 'pendiente' no encontrado.");
             return;
         }
 
         try (Connection conn = ConexionRailway.getConnection()) {
-            // Insertar mentoría
+            // Insertar nueva mentoría con estado pendiente
             String sql = "INSERT INTO mentorias (idea_id, mentor_id, fecha, estado) VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, ideaId);
                 ps.setInt(2, mentorId);
-                ps.setInt(3, estadoId);
+                ps.setInt(3, estadoId);  // Aquí se usa id. Cambia si el campo es string.
                 ps.executeUpdate();
             }
 
-            // Actualizar estado de la idea
+            // Actualizar estado de la idea a 'aprobado' (aquí asumo string)
             String updateIdea = "UPDATE ideas_negocio SET estado = 'aprobado' WHERE id = ?";
             try (PreparedStatement ps2 = conn.prepareStatement(updateIdea)) {
                 ps2.setInt(1, ideaId);
                 ps2.executeUpdate();
             }
 
-            System.out.println(" Mentoría asignada con éxito.");
+            System.out.println("Mentoría asignada con éxito.");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // Insertar una nueva mentoría con fecha explícita
+
+    /**
+     * Inserta una nueva mentoría con fecha explícita.
+     * La fecha debe venir en formato "yyyy-MM-dd HH:mm".
+     */
     public static void insertarMentoria(int ideaId, int mentorId, String fechaTexto) {
         int estadoId = obtenerEstadoId("pendiente");
         if (estadoId == -1) {
@@ -84,10 +95,10 @@ public class MentoriaDAO {
         }
 
         try {
-            // Limpia la fecha de posibles comillas
+            // Limpia la fecha de posibles comillas y espacios
             fechaTexto = fechaTexto.replace("\"", "").trim();
 
-            // Formato esperado yyyy-MM-dd HH:mm (ej: 2025-07-28 15:30)
+            // Parseo de la fecha según el formato esperado
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime fechaHora = LocalDateTime.parse(fechaTexto, formatter);
 
@@ -101,7 +112,7 @@ public class MentoriaDAO {
                 stmt.setInt(1, ideaId);
                 stmt.setInt(2, mentorId);
                 stmt.setTimestamp(3, timestamp);
-                stmt.setInt(4, estadoId);
+                stmt.setInt(4, estadoId); // Cambiar si 'estado' es string
                 stmt.executeUpdate();
 
                 System.out.println("Mentoría registrada correctamente.");
@@ -114,7 +125,10 @@ public class MentoriaDAO {
     }
 
 
-    // Obtener el ID de un estado por nombre
+    /**
+     * Obtiene el ID del estado en la tabla tipo_estados dado su nombre.
+     * Si no se encuentra devuelve -1.
+     */
     private static int obtenerEstadoId(String estado) {
         String sql = "SELECT id FROM tipo_estados WHERE LOWER(tipo) = LOWER(?)";
 
@@ -135,7 +149,11 @@ public class MentoriaDAO {
         return -1;
     }
 
-    // Obtener resumen de todas las mentorías con nombres y estado
+
+    /**
+     * Obtiene una lista de mentorías con información resumida: idea, mentor, fecha y estado.
+     * El estado se une a partir del id.
+     */
     public static List<String> obtenerMentorias() {
         List<String> mentorias = new ArrayList<>();
         String sql = """
@@ -169,7 +187,11 @@ public class MentoriaDAO {
         return mentorias;
     }
 
-    // Obtener mentorías asignadas a un mentor específico
+
+    /**
+     * Obtiene las mentorías asignadas a un mentor específico.
+     * Devuelve objetos Mentoria con datos completos.
+     */
     public static List<Mentoria> obtenerMentoriasPorMentor(int mentorId) {
         List<Mentoria> lista = new ArrayList<>();
         String sql = """
@@ -204,6 +226,9 @@ public class MentoriaDAO {
         return lista;
     }
 
+    /**
+     * Obtiene el ID de la mentoría más reciente para una idea específica.
+     */
     public static int obtenerMentoriaIdPorIdea(int ideaId) {
         String sql = "SELECT id FROM mentorias WHERE idea_id = ? ORDER BY fecha DESC LIMIT 1";
         int mentoriaId = -1;
@@ -224,5 +249,4 @@ public class MentoriaDAO {
 
         return mentoriaId;
     }
-
 }

@@ -9,6 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Ventana para crear una nueva idea de negocio.
+ * Permite al usuario seleccionar categoría, ingresar título y descripción.
+ * Al guardar, llama al controlador para registrar la idea y notifica a través del callback.
+ */
 public class CrearIdeaNegocio extends JFrame {
     private JPanel panelCrearIdea;
     private JButton guardarIdeaButton;
@@ -19,6 +24,12 @@ public class CrearIdeaNegocio extends JFrame {
     private int usuarioId;
     private Actualizable callback;
 
+    /**
+     * Constructor que inicializa la ventana para crear una nueva idea de negocio.
+     *
+     * @param usuarioId ID del usuario que crea la idea.
+     * @param callback  Interfaz para actualizar la vista (por ejemplo, tabla en dashboard) después de crear la idea.
+     */
     public CrearIdeaNegocio(int usuarioId, Actualizable callback) {
         this.usuarioId = usuarioId;
         this.callback = callback;
@@ -35,6 +46,9 @@ public class CrearIdeaNegocio extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Carga las categorías desde el controlador y las agrega al JComboBox.
+     */
     private void cargarCategorias() {
         List<Categoria> categorias = IdeaNegocioController.listarCategorias();
         for (Categoria categoria : categorias) {
@@ -42,6 +56,10 @@ public class CrearIdeaNegocio extends JFrame {
         }
     }
 
+    /**
+     * Agrega el listener al botón de guardar para validar datos y registrar la idea.
+     * En caso de éxito, actualiza la vista vía callback y cierra la ventana.
+     */
     private void agregarListeners() {
         guardarIdeaButton.addActionListener(new ActionListener() {
             @Override
@@ -58,7 +76,7 @@ public class CrearIdeaNegocio extends JFrame {
                 boolean exito = IdeaNegocioController.registrarIdea(usuarioId, categoriaSeleccionada.getId(), titulo, descripcion);
                 if (exito) {
                     JOptionPane.showMessageDialog(CrearIdeaNegocio.this, "Idea registrada correctamente.");
-                    callback.actualizar(); // <---- actualizar tabla en el Dashboard
+                    callback.actualizar(); // Actualiza tabla en el dashboard
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(CrearIdeaNegocio.this, "Error al registrar la idea.");

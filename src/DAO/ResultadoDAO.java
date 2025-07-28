@@ -7,7 +7,13 @@ import Conexion.ConexionRailway;
 
 public class ResultadoDAO {
 
-    // Inserta un nuevo resultado en la tabla resultados
+    /**
+     * Inserta un nuevo resultado en la base de datos y devuelve el ID generado.
+     *
+     * @param usuarioId     ID del usuario asociado al resultado.
+     * @param estadisticaId ID de la estadística asociada al resultado.
+     * @return El ID generado para el nuevo resultado, o -1 si hubo un error.
+     */
     public static int insertarResultado(int usuarioId, int estadisticaId) {
         String sql = "INSERT INTO resultados (usuario_id, estadisticas_id) VALUES (?, ?) RETURNING id";
         int idGenerado = -1;
@@ -29,28 +35,31 @@ public class ResultadoDAO {
         return idGenerado;
     }
 
-    // Devuelve todos los resultados de un mentor
+    /**
+     * Obtiene una lista de resultados en formato de texto para un usuario específico.
+     *
+     * @param usuarioId ID del usuario cuyos resultados se quieren obtener.
+     * @return Lista de cadenas con la información detallada de cada resultado.
+     */
     public static List<String> obtenerResultadosPorUsuario(int usuarioId) {
         List<String> resultados = new ArrayList<>();
         String sql = """
-            SELECT\s
-                        r.id AS resultado_id,
-                        p.nombres || ' ' || p.apellidos AS usuario,
-                        f.fase AS nombre_fase,
-                        af.porcentaje_avance,
-                        af.fecha_avance,
-                        i.titulo AS idea_titulo
-                    FROM resultados r
-                    JOIN estadisticas_idea e ON r.estadisticas_id = e.id
-                    JOIN avance_fases af ON e.avance_fase_id = af.id
-                    JOIN fases_proyecto f ON af.fase_id = f.id
-                    JOIN mentorias m ON e.mentoria_id = m.id
-                    JOIN ideas_negocio i ON m.idea_id = i.id
-                    JOIN usuarios u ON r.usuario_id = u.id
-                    JOIN personas p ON u.persona_id = p.id
-                    WHERE r.usuario_id = ?;
-                
-                
+            SELECT
+                r.id AS resultado_id,
+                p.nombres || ' ' || p.apellidos AS usuario,
+                f.fase AS nombre_fase,
+                af.porcentaje_avance,
+                af.fecha_avance,
+                i.titulo AS idea_titulo
+            FROM resultados r
+            JOIN estadisticas_idea e ON r.estadisticas_id = e.id
+            JOIN avance_fases af ON e.avance_fase_id = af.id
+            JOIN fases_proyecto f ON af.fase_id = f.id
+            JOIN mentorias m ON e.mentoria_id = m.id
+            JOIN ideas_negocio i ON m.idea_id = i.id
+            JOIN usuarios u ON r.usuario_id = u.id
+            JOIN personas p ON u.persona_id = p.id
+            WHERE r.usuario_id = ?;
         """;
 
         try (Connection conn = ConexionRailway.getConnection();
@@ -69,7 +78,6 @@ public class ResultadoDAO {
                 resultados.add(linea);
             }
 
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -77,26 +85,32 @@ public class ResultadoDAO {
         return resultados;
     }
 
+    /**
+     * Obtiene una lista de resultados en formato de texto para un mentor específico.
+     *
+     * @param mentorId ID del mentor cuyos resultados asociados se desean obtener.
+     * @return Lista de cadenas con información detallada de cada resultado asociado a las ideas mentoradas.
+     */
     public static List<String> obtenerResultadosDelMentor(int mentorId) {
         List<String> resultados = new ArrayList<>();
         String sql = """
-        SELECT 
-            r.id AS resultado_id,
-            p.nombres || ' ' || p.apellidos AS nombre_emprendedor,
-            f.fase AS nombre_fase,
-            af.porcentaje_avance,
-            af.fecha_avance,
-            i.titulo AS idea_titulo
-        FROM resultados r
-        JOIN estadisticas_idea e ON r.estadisticas_id = e.id
-        JOIN avance_fases af ON e.avance_fase_id = af.id
-        JOIN fases_proyecto f ON af.fase_id = f.id
-        JOIN mentorias m ON e.mentoria_id = m.id
-        JOIN ideas_negocio i ON m.idea_id = i.id
-        JOIN usuarios u ON i.usuario_id = u.id               -- ✅ dueño de la idea
-        JOIN personas p ON u.persona_id = p.id               -- ✅ datos del dueño
-        WHERE m.mentor_id = ?;
-    """;
+            SELECT 
+                r.id AS resultado_id,
+                p.nombres || ' ' || p.apellidos AS nombre_emprendedor,
+                f.fase AS nombre_fase,
+                af.porcentaje_avance,
+                af.fecha_avance,
+                i.titulo AS idea_titulo
+            FROM resultados r
+            JOIN estadisticas_idea e ON r.estadisticas_id = e.id
+            JOIN avance_fases af ON e.avance_fase_id = af.id
+            JOIN fases_proyecto f ON af.fase_id = f.id
+            JOIN mentorias m ON e.mentoria_id = m.id
+            JOIN ideas_negocio i ON m.idea_id = i.id
+            JOIN usuarios u ON i.usuario_id = u.id
+            JOIN personas p ON u.persona_id = p.id
+            WHERE m.mentor_id = ?;
+        """;
 
         try (Connection conn = ConexionRailway.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -120,6 +134,4 @@ public class ResultadoDAO {
 
         return resultados;
     }
-
-
 }

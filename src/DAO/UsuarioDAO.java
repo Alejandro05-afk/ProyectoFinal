@@ -11,7 +11,11 @@ import java.util.List;
 
 public class UsuarioDAO {
 
-    // Insertar un nuevo usuario (en tabla usuarios)
+    /**
+     * Inserta un nuevo usuario en la tabla usuarios.
+     * @param usuario objeto Usuario con datos a insertar.
+     * @return true si la inserción fue exitosa, false en caso contrario.
+     */
     public boolean insertarUsuario(Usuario usuario) {
         String sql = "INSERT INTO usuarios (persona_id, contraseña, tipo_usuario) VALUES (?, ?, ?)";
 
@@ -30,7 +34,13 @@ public class UsuarioDAO {
         }
     }
 
-    // Verificar login (correo, contraseña y rol)
+    /**
+     * Verifica el login con correo, contraseña y rol.
+     * @param correo correo del usuario.
+     * @param contraseña contraseña del usuario.
+     * @param rol rol esperado del usuario.
+     * @return Usuario si las credenciales son correctas; null si no.
+     */
     public Usuario verificarLogin(String correo, String contraseña, String rol) {
         Usuario usuario = null;
 
@@ -67,7 +77,11 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // Obtener usuario por personaId (para obtener rol y contraseña)
+    /**
+     * Obtiene el usuario por el ID de persona.
+     * @param personaId ID de la persona.
+     * @return Usuario correspondiente o null si no existe.
+     */
     public Usuario obtenerPorPersonaId(int personaId) {
         Usuario usuario = null;
         String sql = "SELECT * FROM usuarios WHERE persona_id = ?";
@@ -93,7 +107,10 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    // Listar personas (sin rol)
+    /**
+     * Lista todas las personas que son usuarios (sin incluir rol).
+     * @return Lista de objetos Persona.
+     */
     public List<Persona> listarUsuarios() {
         List<Persona> usuarios = new ArrayList<>();
 
@@ -125,7 +142,11 @@ public class UsuarioDAO {
         return usuarios;
     }
 
-    // Buscar persona por nombre (sin rol)
+    /**
+     * Busca una persona por nombre (sin rol).
+     * @param nombre nombre parcial o completo.
+     * @return Persona encontrada o null si no hay coincidencias.
+     */
     public Persona buscarPorNombre(String nombre) {
         String sql = """
             SELECT p.id, p.nombres, p.apellidos, p.correo, p.telefono, p.direccion
@@ -158,7 +179,11 @@ public class UsuarioDAO {
         return null;
     }
 
-    // Buscar persona con rol por nombre (solo devuelve 1 resultado)
+    /**
+     * Busca usuarios completos (persona + rol) por nombre (puede devolver varios).
+     * @param nombre nombre parcial o completo.
+     * @return Lista de objetos UsuarioCompleto que coinciden con el nombre.
+     */
     public static List<UsuarioCompleto> buscarPorNombreConRol(String nombre) {
         List<UsuarioCompleto> lista = new ArrayList<>();
 
@@ -196,7 +221,12 @@ public class UsuarioDAO {
     }
 
 
-    // Editar un campo (puede ser en personas o usuarios)
+    /**
+     * Edita un campo específico de la persona o del usuario.
+     * @param personaId ID de la persona a modificar.
+     * @param campo nombre del campo a modificar (en persona o usuario).
+     * @param nuevoValor nuevo valor para el campo.
+     */
     public void editarCampo(int personaId, String campo, String nuevoValor) {
         String sql;
         if (campo.equalsIgnoreCase("contraseña") || campo.equalsIgnoreCase("tipo_usuario")) {
@@ -217,7 +247,10 @@ public class UsuarioDAO {
         }
     }
 
-    // Eliminar usuario (de ambas tablas)
+    /**
+     * Elimina un usuario y su persona asociada.
+     * @param personaId ID de la persona a eliminar.
+     */
     public void eliminarUsuario(int personaId) {
         String sqlUsuarios = "DELETE FROM usuarios WHERE persona_id = ?";
         String sqlPersonas = "DELETE FROM personas WHERE id = ?";
@@ -239,7 +272,10 @@ public class UsuarioDAO {
 
 
 
-    // Listar usuarios completos (persona + rol)
+    /**
+     * Lista usuarios completos con sus datos personales y rol.
+     * @return Lista de UsuarioCompleto con información completa.
+     */
     public List<UsuarioCompleto> listarUsuariosConRol() {
         List<UsuarioCompleto> lista = new ArrayList<>();
         String sql = """

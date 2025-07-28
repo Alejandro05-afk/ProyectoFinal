@@ -8,8 +8,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO para operaciones CRUD y consultas sobre la entidad IdeaNegocio.
+ */
 public class IdeaNegocioDAO {
 
+    /**
+     * Lista todas las ideas de negocio.
+     * @return Lista de {@link IdeaNegocio}.
+     */
     public static List<IdeaNegocio> listarIdeas() {
         List<IdeaNegocio> lista = new ArrayList<>();
         String sql = "SELECT id, usuario_id, categoria_id, titulo, descripcion, estado FROM ideas_negocio";
@@ -34,6 +41,11 @@ public class IdeaNegocioDAO {
         return lista;
     }
 
+    /**
+     * Busca una idea por su ID.
+     * @param id ID de la idea.
+     * @return Objeto {@link IdeaNegocio} o null si no se encuentra.
+     */
     public static IdeaNegocio buscarPorId(int id) {
         String sql = "SELECT id, usuario_id, categoria_id, titulo, descripcion, estado FROM ideas_negocio WHERE id = ?";
         IdeaNegocio idea = null;
@@ -59,6 +71,11 @@ public class IdeaNegocioDAO {
         return idea;
     }
 
+    /**
+     * Crea una nueva idea de negocio.
+     * @param idea Objeto {@link IdeaNegocio} a insertar.
+     * @return true si la inserción fue exitosa, false si hubo error.
+     */
     public static boolean crear(IdeaNegocio idea) {
         String sql = "INSERT INTO ideas_negocio (usuario_id, categoria_id, titulo, descripcion, estado) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
@@ -83,6 +100,11 @@ public class IdeaNegocioDAO {
         return false;
     }
 
+    /**
+     * Actualiza una idea de negocio existente.
+     * @param idea Objeto {@link IdeaNegocio} con datos actualizados.
+     * @return true si se actualizó correctamente, false si no.
+     */
     public static boolean editar(IdeaNegocio idea) {
         String sql = "UPDATE ideas_negocio SET usuario_id = ?, categoria_id = ?, titulo = ?, descripcion = ?, estado = ? WHERE id = ?";
 
@@ -104,6 +126,11 @@ public class IdeaNegocioDAO {
         return false;
     }
 
+    /**
+     * Elimina una idea de negocio por su ID.
+     * @param id ID de la idea a eliminar.
+     * @return true si la eliminación fue exitosa, false si no.
+     */
     public static boolean eliminar(int id) {
         String sql = "DELETE FROM ideas_negocio WHERE id = ?";
 
@@ -119,7 +146,11 @@ public class IdeaNegocioDAO {
         return false;
     }
 
-    // Resultados asociados a una idea específica
+    /**
+     * Obtiene los resultados asociados a una idea específica en formato texto.
+     * @param ideaId ID de la idea.
+     * @return Lista de strings con detalles de resultados.
+     */
     public static List<String> obtenerResultadosPorIdea(int ideaId) {
         List<String> resultados = new ArrayList<>();
         String sql = """
@@ -151,7 +182,11 @@ public class IdeaNegocioDAO {
         return resultados;
     }
 
-    // Estadísticas asociadas a una idea
+    /**
+     * Obtiene las estadísticas asociadas a una idea en formato texto.
+     * @param ideaId ID de la idea.
+     * @return Lista de strings con detalles de estadísticas.
+     */
     public static List<String> obtenerEstadisticasPorIdea(int ideaId) {
         List<String> estadisticas = new ArrayList<>();
         String sql = """
@@ -186,7 +221,11 @@ public class IdeaNegocioDAO {
         return estadisticas;
     }
 
-    // Ideas asignadas a un mentor
+    /**
+     * Obtiene las ideas asignadas a un mentor específico.
+     * @param mentorId ID del mentor.
+     * @return Lista de {@link IdeaNegocio} asignadas.
+     */
     public static List<IdeaNegocio> obtenerIdeasAsignadasAlMentor(int mentorId) {
         List<IdeaNegocio> lista = new ArrayList<>();
         String sql = """
@@ -220,6 +259,15 @@ public class IdeaNegocioDAO {
 
         return lista;
     }
+
+    /**
+     * Registra una idea nueva con estado por defecto (1).
+     * @param usuarioId ID del usuario que registra.
+     * @param categoriaId ID de la categoría.
+     * @param titulo Título de la idea.
+     * @param descripcion Descripción de la idea.
+     * @return true si la inserción fue exitosa, false en caso contrario.
+     */
     public static boolean registrarIdea(int usuarioId, int categoriaId, String titulo, String descripcion) {
         String sql = "INSERT INTO ideas_negocio(usuario_id, categoria_id, titulo, descripcion, estado) VALUES (?, ?, ?, ?, 1)";
         try (Connection conn = ConexionRailway.getConnection();
@@ -235,6 +283,10 @@ public class IdeaNegocioDAO {
         }
     }
 
+    /**
+     * Obtiene la lista de categorías disponibles.
+     * @return Lista de {@link Categoria}.
+     */
     public static List<Categoria> obtenerCategorias() {
         List<Categoria> lista = new ArrayList<>();
         String sql = "SELECT id, nombre FROM categorias";
@@ -249,6 +301,12 @@ public class IdeaNegocioDAO {
         }
         return lista;
     }
+
+    /**
+     * Lista las ideas creadas por un usuario específico.
+     * @param usuarioId ID del usuario.
+     * @return Lista de {@link IdeaNegocio}.
+     */
     public static List<IdeaNegocio> listarIdeasPorUsuario(int usuarioId) {
         List<IdeaNegocio> lista = new ArrayList<>();
         String sql = "SELECT * FROM ideas_negocio WHERE usuario_id = ?";
@@ -263,7 +321,7 @@ public class IdeaNegocioDAO {
                         rs.getInt("categoria_id"),
                         rs.getString("titulo"),
                         rs.getString("descripcion"),
-                        rs.getString("estado") // O int si es entero
+                        rs.getString("estado")
                 ));
             }
         } catch (SQLException e) {
@@ -271,6 +329,12 @@ public class IdeaNegocioDAO {
         }
         return lista;
     }
+
+    /**
+     * Obtiene el ID del usuario propietario de una idea específica.
+     * @param ideaId ID de la idea.
+     * @return ID del usuario o -1 si no se encuentra.
+     */
     public static int obtenerUsuarioIdPorIdea(int ideaId) {
         int usuarioId = -1;
         String sql = "SELECT usuario_id FROM ideas_negocio WHERE id = ?";
@@ -289,6 +353,4 @@ public class IdeaNegocioDAO {
         }
         return usuarioId;
     }
-
-
 }

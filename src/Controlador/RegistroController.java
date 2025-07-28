@@ -6,17 +6,30 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-
+/**
+ * Controlador encargado de registrar nuevas cuentas de usuarios en el sistema.
+ */
 public class RegistroController {
 
-    public static void registrarCuenta(String nombres, String apellidos,String correo, String telefono, String direccion,
-                                        String contraseña, String rol) {
+    /**
+     * Registra una nueva cuenta insertando datos en las tablas personas y usuarios.
+     *
+     * @param nombres Nombres del usuario.
+     * @param apellidos Apellidos del usuario.
+     * @param correo Correo electrónico.
+     * @param telefono Número telefónico.
+     * @param direccion Dirección del usuario.
+     * @param contraseña Contraseña para la cuenta.
+     * @param rol Rol del usuario (tipo_usuario_enum).
+     */
+    public static void registrarCuenta(String nombres, String apellidos, String correo, String telefono, String direccion,
+                                       String contraseña, String rol) {
         try (Connection conn = ConexionRailway.getConnection()) {
             conn.setAutoCommit(false);
 
             // Insertar en personas
             String sqlPersona = """
-                INSERT INTO personas (nombres, apellidos,correo, telefono, direccion )
+                INSERT INTO personas (nombres, apellidos, correo, telefono, direccion)
                 VALUES (?, ?, ?, ?, ?) RETURNING id;
             """;
 
@@ -26,7 +39,6 @@ public class RegistroController {
             psPersona.setString(3, correo);
             psPersona.setString(4, telefono);
             psPersona.setString(5, direccion);
-
 
             ResultSet rs = psPersona.executeQuery();
             int personaId = -1;
@@ -41,7 +53,6 @@ public class RegistroController {
                     INSERT INTO usuarios (persona_id, contraseña, tipo_usuario)
                     VALUES (?, ?, ?::tipo_usuario_enum);
                 """;
-
 
                 PreparedStatement psUsuario = conn.prepareStatement(sqlUsuario);
                 psUsuario.setInt(1, personaId);

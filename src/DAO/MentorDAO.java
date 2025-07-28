@@ -1,12 +1,19 @@
 package DAO;
+
 import Conexion.ConexionRailway;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * DAO para operaciones relacionadas con mentores.
+ */
 public class MentorDAO {
 
+    /**
+     * Obtiene el ID del mentor asociado a una persona por su personaId.
+     * @param personaId ID de la persona.
+     * @return El ID del mentor si se encuentra, o null si no existe o hubo un error.
+     */
     public static Integer obtenerMentorIdPorPersonaId(int personaId) {
         String sql = "SELECT id FROM mentores WHERE persona_id = ?";
 
@@ -29,5 +36,3 @@ public class MentorDAO {
     }
 
 }
-
-

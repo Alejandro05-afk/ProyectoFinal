@@ -6,9 +6,17 @@ import Modelo.Observacion;
 import java.sql.Date;
 import java.util.List;
 
+/**
+ * Controlador encargado de gestionar las operaciones relacionadas con las observaciones de mentorías.
+ */
 public class ObservacionController {
 
-    // Agrega una observación a una mentoría
+    /**
+     * Agrega una nueva observación a una mentoría específica.
+     *
+     * @param mentoriaId ID de la mentoría a la que se agrega la observación.
+     * @param comentario Texto de la observación.
+     */
     public static void agregarObservacion(int mentoriaId, String comentario) {
         Observacion obs = new Observacion();
         obs.setMentoriaId(mentoriaId);
@@ -16,17 +24,32 @@ public class ObservacionController {
         ObservacionDAO.insertarObservacion(obs);
     }
 
-    // Listar observaciones por mentoría
+    /**
+     * Lista todas las observaciones asociadas a una mentoría.
+     *
+     * @param mentoriaId ID de la mentoría.
+     * @return Lista de objetos {@link Observacion}.
+     */
     public static List<Observacion> listarPorMentoria(int mentoriaId) {
         return ObservacionDAO.listarPorMentoria(mentoriaId);
     }
 
-    // Listar observaciones por usuario (emprendedor)
+    /**
+     * Lista todas las observaciones realizadas a un usuario (emprendedor) específico.
+     *
+     * @param usuarioId ID del usuario.
+     * @return Lista de objetos {@link Observacion}.
+     */
     public static List<Observacion> listarPorUsuario(int usuarioId) {
         return ObservacionDAO.listarPorUsuario(usuarioId);
     }
 
-    // Listar observaciones por fecha
+    /**
+     * Lista todas las observaciones realizadas en una fecha específica.
+     *
+     * @param fecha Fecha para filtrar las observaciones.
+     * @return Lista de objetos {@link Observacion}.
+     */
     public static List<Observacion> listarPorFecha(Date fecha) {
         return ObservacionDAO.listarPorFecha(fecha);
     }

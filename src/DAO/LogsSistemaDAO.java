@@ -6,8 +6,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO para manejar los logs del sistema.
+ * Permite insertar logs y obtener la lista de logs con detalles del usuario.
+ */
 public class LogsSistemaDAO {
 
+    /**
+     * Inserta un nuevo registro de log en la base de datos.
+     * @param usuarioId ID del usuario que realiza la acción.
+     * @param accion Descripción de la acción realizada.
+     * @return true si la inserción fue exitosa, false si hubo error.
+     */
     public static boolean insertarLog(int usuarioId, String accion) {
         String sql = "INSERT INTO logs_sistema(usuario_id, accion, fecha) VALUES (?, ?, NOW())";
 
@@ -24,6 +34,11 @@ public class LogsSistemaDAO {
         }
     }
 
+    /**
+     * Inserta un nuevo registro de log sin retornar resultado.
+     * @param usuarioId ID del usuario que realiza la acción.
+     * @param accion Descripción de la acción realizada.
+     */
     public static void registrarLog(int usuarioId, String accion) {
         String sql = "INSERT INTO logs_sistema(usuario_id, accion, fecha) VALUES (?, ?, NOW())";
 
@@ -39,7 +54,10 @@ public class LogsSistemaDAO {
         }
     }
 
-
+    /**
+     * Obtiene todos los logs del sistema con información del usuario.
+     * @return Lista de strings con la información del log formateada.
+     */
     public static List<String> obtenerTodosLosLogs() {
         List<String> logs = new ArrayList<>();
         String sql = """
@@ -76,5 +94,4 @@ public class LogsSistemaDAO {
 
         return logs;
     }
-
 }

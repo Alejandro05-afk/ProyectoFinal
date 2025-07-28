@@ -4,9 +4,16 @@ import DAO.LogsSistemaDAO;
 
 import java.util.List;
 
+/**
+ * Controlador encargado de gestionar la recuperación de los registros (logs) del sistema.
+ */
 public class LogSistemaController {
 
-    // Obtener los logs como Strings (para mostrar en el JList)
+    /**
+     * Obtiene todos los logs del sistema en formato de texto para su visualización en la interfaz (por ejemplo, en un JList).
+     *
+     * @return Lista de logs como {@link String}.
+     */
     public static List<String> obtenerLogsComoTexto() {
         List<String> logs = LogsSistemaDAO.obtenerTodosLosLogs();
         if (logs == null || logs.isEmpty()) {

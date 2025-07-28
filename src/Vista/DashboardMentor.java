@@ -7,7 +7,11 @@ import Modelo.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
-
+/**
+ * Clase que representa el dashboard principal para el usuario con rol Mentor.
+ * Permite visualizar ideas asignadas, gestionar mentorías, generar reportes,
+ * agregar observaciones, asignar fases y mostrar resultados relacionados al mentor.
+ */
 public class DashboardMentor extends JFrame {
     private JTabbedPane tabbedPane1;
     private JPanel panelMentor;
@@ -23,7 +27,12 @@ public class DashboardMentor extends JFrame {
 
     private int mentorId;
     private Usuario mentor;
-
+    /**
+     * Constructor que inicializa el dashboard para el mentor dado.
+     * Realiza la carga inicial de ideas asignadas y mentorías del mentor.
+     *
+     * @param mentor Objeto Usuario que representa al mentor autenticado.
+     */
     public DashboardMentor(Usuario mentor) {
         this.mentor = mentor;
         int personaId = mentor.getPersona().getId();
@@ -39,7 +48,7 @@ public class DashboardMentor extends JFrame {
 
         setContentPane(panelMentor);
         setTitle("Mentor");
-        setSize(800, 600);
+        setSize(500, 350);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
@@ -68,7 +77,9 @@ public class DashboardMentor extends JFrame {
         });
 
     }
-
+    /**
+     * Carga en la tabla las ideas de negocio asignadas al mentor.
+     */
     private void cargarIdeasAsignadas() {
         List<IdeaNegocio> ideas = IdeaNegocioController.obtenerIdeasPorMentor(mentorId);
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Título", "Descripción", "Estado"}, 0);
@@ -81,7 +92,9 @@ public class DashboardMentor extends JFrame {
 
         tableideas.setModel(model);
     }
-
+    /**
+     * Carga en la tabla todas las mentorías asociadas al mentor.
+     */
     private void cargarMentorias() {
         List<Mentoria> mentorias = MentoriaController.obtenerMentoriasPorMentor(mentorId);
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Idea ID", "Fecha", "Estado"}, 0);
@@ -94,7 +107,10 @@ public class DashboardMentor extends JFrame {
 
         tableMentorias.setModel(model);
     }
-
+    /**
+     * Permite agendar una nueva mentoría para la idea seleccionada.
+     * Solicita la fecha al usuario y crea la mentoría.
+     */
     private void agendarMentoria() {
         int fila = tableideas.getSelectedRow();
         if (fila == -1) {
@@ -111,7 +127,10 @@ public class DashboardMentor extends JFrame {
             cargarMentorias();
         }
     }
-
+    /**
+     * Genera un reporte para la idea seleccionada, incluyendo asignación
+     * de fase y registro de estadística y resultado.
+     */
     private void generarReporte() {
         int fila = tableideas.getSelectedRow();
         if (fila == -1) {
@@ -157,7 +176,10 @@ public class DashboardMentor extends JFrame {
 
         JOptionPane.showMessageDialog(this, "Reporte generado y guardado correctamente.");
     }
-
+    /**
+     * Permite agregar una observación para la mentoría seleccionada.
+     * Solicita el comentario al usuario y lo guarda.
+     */
     private void agregarObservacion() {
         int fila = tableMentorias.getSelectedRow();
         if (fila == -1) {
@@ -174,6 +196,9 @@ public class DashboardMentor extends JFrame {
         }
     }
 
+    /**
+     * Asigna una fase a la mentoría seleccionada mediante diálogo de selección.
+     */
     private void asignarFase() {
         int fila = tableMentorias.getSelectedRow();
         if (fila == -1) {
@@ -204,7 +229,9 @@ public class DashboardMentor extends JFrame {
             JOptionPane.showMessageDialog(this, "Fase asignada.");
         }
     }
-
+    /**
+     * Muestra todos los resultados relacionados al mentor en un cuadro de diálogo.
+     */
     private void mostrarResultados() {
         List<String> resultados = ResultadoController.obtenerResultadosDelMentor(mentorId);
 
@@ -219,7 +246,10 @@ public class DashboardMentor extends JFrame {
             JOptionPane.showMessageDialog(this, scroll, "Resultados del Mentor", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
+    /**
+     * Registra un avance de fase para la idea seleccionada, solicitando
+     * ID de fase y porcentaje de avance al usuario.
+     */
     private void agregarAvanceFase() {
         int fila = tableideas.getSelectedRow();
         if (fila == -1) {
@@ -257,7 +287,12 @@ public class DashboardMentor extends JFrame {
         }
     }
 
-    // Método que obtienes el id de fase a partir del JComboBox o similar
+    /**
+     * Muestra un diálogo para que el usuario seleccione una fase de proyecto,
+     * y retorna el ID de la fase seleccionada.
+     *
+     * @return ID de la fase seleccionada o -1 si no se seleccionó ninguna.
+     */
     private int obtenerFaseIdSeleccionada() {
         // Obtiene la lista de fases disponibles desde el controlador
         List<FaseProyecto> fases = EstadisticaController.listarFases();

@@ -1,20 +1,27 @@
 package DAO;
+
 import Conexion.ConexionRailway;
 import Modelo.Observacion;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObservacionDAO {
 
+    /**
+     * Inserta una nueva observación asociada a una mentoría.
+     * @param obs objeto Observacion con mentoriaId y comentario
+     * @return true si se insertó correctamente, false si hubo error
+     */
     public static boolean insertarObservacion(Observacion obs) {
         String sql = "INSERT INTO observaciones (mentoria_id, comentario) VALUES (?, ?)";
         try (Connection conn = ConexionRailway.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, obs.getMentoriaId());
-            stmt.setString(2, obs.getComentario());
-            stmt.executeUpdate();
+            stmt.setInt(1, obs.getMentoriaId());  // ID de la mentoría a la que pertenece la observación
+            stmt.setString(2, obs.getComentario()); // Texto de la observación
+            stmt.executeUpdate(); // Ejecuta el insert
             return true;
 
         } catch (SQLException e) {
@@ -23,6 +30,11 @@ public class ObservacionDAO {
         }
     }
 
+    /**
+     * Lista todas las observaciones asociadas a una mentoría específica.
+     * @param mentoriaId ID de la mentoría
+     * @return lista de observaciones para esa mentoría
+     */
     public static List<Observacion> listarPorMentoria(int mentoriaId) {
         List<Observacion> observaciones = new ArrayList<>();
         String sql = "SELECT * FROM observaciones WHERE mentoria_id = ?";
@@ -49,6 +61,13 @@ public class ObservacionDAO {
         return observaciones;
     }
 
+    /**
+     * Lista todas las observaciones asociadas a un usuario (emprendedor).
+     * Para ello, se hace join desde observaciones -> mentorias -> ideas_negocio,
+     * filtrando por usuario_id en ideas_negocio.
+     * @param usuarioId ID del usuario
+     * @return lista de observaciones asociadas al usuario
+     */
     public static List<Observacion> listarPorUsuario(int usuarioId) {
         List<Observacion> observaciones = new ArrayList<>();
         String sql = """
@@ -81,6 +100,12 @@ public class ObservacionDAO {
         return observaciones;
     }
 
+    /**
+     * Lista las observaciones realizadas en una fecha específica.
+     * Se asume que la tabla observaciones tiene una columna 'fecha_observacion' de tipo timestamp o date.
+     * @param fecha fecha para filtrar las observaciones (java.sql.Date)
+     * @return lista de observaciones en esa fecha
+     */
     public static List<Observacion> listarPorFecha(Date fecha) {
         List<Observacion> observaciones = new ArrayList<>();
         String sql = "SELECT * FROM observaciones WHERE DATE(fecha_observacion) = ?";

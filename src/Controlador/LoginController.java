@@ -12,9 +12,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+/**
+ * Controlador encargado del proceso de autenticación de usuarios y redirección a los dashboards.
+ */
 public class LoginController {
 
-    // Retorna el usuario autenticado con sus datos completos
+    /**
+     * Autentica un usuario mediante su correo, contraseña y rol.
+     *
+     * @param correo Correo electrónico ingresado.
+     * @param contraseña Contraseña ingresada.
+     * @param rol Rol seleccionado (administrador, mentor, emprendedor).
+     * @return Objeto {@link Usuario} autenticado con sus datos completos, o {@code null} si la autenticación falla.
+     */
     public static Usuario autenticarUsuario(String correo, String contraseña, String rol) {
         String sql = """
         SELECT u.id AS usuario_id, u.contraseña, u.tipo_usuario, p.id AS persona_id, p.nombres, p.apellidos, p.correo
@@ -41,7 +51,7 @@ public class LoginController {
                     persona.setCorreo(rs.getString("correo"));
 
                     Usuario usuario = new Usuario();
-                    usuario.setId(rs.getInt("usuario_id"));  // <---- Aquí asignas el ID del usuario
+                    usuario.setId(rs.getInt("usuario_id"));
                     usuario.setRol(rolDB);
                     usuario.setPersona(persona);
 
@@ -57,7 +67,14 @@ public class LoginController {
         return null; // si no autenticó correctamente
     }
 
-
+    /**
+     * Inicia el proceso de inicio de sesión desde la interfaz gráfica.
+     *
+     * @param correo Correo electrónico ingresado.
+     * @param contraseña Contraseña ingresada.
+     * @param rol Rol seleccionado.
+     * @param loginFrame Ventana actual de inicio de sesión que se debe cerrar tras el acceso.
+     */
     public static void iniciarSesion(String correo, String contraseña, String rol, JFrame loginFrame) {
         if (correo.isEmpty() || contraseña.isEmpty() || rol.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
@@ -75,8 +92,11 @@ public class LoginController {
         }
     }
 
-
-
+    /**
+     * Lanza el dashboard correspondiente según el rol del usuario autenticado.
+     *
+     * @param usuario Usuario autenticado.
+     */
     private static void lanzarDashboard(Usuario usuario) {
         switch (usuario.getRol().toLowerCase()) {
             case "administrador" -> new DashboardAdmin(usuario.getId()).setVisible(true);
@@ -85,6 +105,4 @@ public class LoginController {
             default -> JOptionPane.showMessageDialog(null, "Rol desconocido");
         }
     }
-
-
 }

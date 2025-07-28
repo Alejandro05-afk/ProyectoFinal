@@ -9,14 +9,24 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO para gestionar las operaciones relacionadas con las estadísticas de mentorías y fases.
+ */
 public class EstadisticaDAO {
 
-    // Generar nueva estadística para una mentoría y fase (versión mejorada)
+    /**
+     * Genera una nueva estadística para una mentoría y una fase específica.
+     * Si no existe un avance de fase para esa combinación, lo crea con 0% de avance.
+     *
+     * @param mentoriaId ID de la mentoría.
+     * @param faseId ID de la fase del proyecto.
+     * @return ID de la estadística creada, o -1 si ocurrió un error.
+     */
     public static int generarEstadisticaParaMentoria(int mentoriaId, int faseId) {
         int estadisticaId = -1;
 
         try (Connection conn = ConexionRailway.getConnection()) {
-            // Crear o buscar avance_fase para la mentoría y fase
+            // Buscar avance_fase existente
             String sqlBuscarAvance = "SELECT id FROM avance_fases WHERE idea_id = (SELECT idea_id FROM mentorias WHERE id = ?) AND fase_id = ? LIMIT 1";
             PreparedStatement psBuscar = conn.prepareStatement(sqlBuscarAvance);
             psBuscar.setInt(1, mentoriaId);
@@ -27,7 +37,7 @@ public class EstadisticaDAO {
             if (rsBuscar.next()) {
                 avanceFaseId = rsBuscar.getInt("id");
             } else {
-                // Insertar nuevo avance_fase con 0% y fecha actual
+                // Insertar nuevo avance_fase con 0% de avance y fecha actual
                 String sqlInsertAvance = "INSERT INTO avance_fases (idea_id, fase_id, porcentaje_avance, fecha_avance) VALUES ((SELECT idea_id FROM mentorias WHERE id = ?), ?, 0, CURRENT_TIMESTAMP) RETURNING id";
                 PreparedStatement psInsert = conn.prepareStatement(sqlInsertAvance);
                 psInsert.setInt(1, mentoriaId);
@@ -40,7 +50,7 @@ public class EstadisticaDAO {
                 }
             }
 
-            // Insertar estadistica_idea con mentoría y avance_fase
+            // Insertar estadistica_idea vinculando mentoría y avance_fase
             String sqlInsertEstadistica = "INSERT INTO estadisticas_idea (mentoria_id, avance_fase_id) VALUES (?, ?) RETURNING id";
             PreparedStatement psEstadistica = conn.prepareStatement(sqlInsertEstadistica);
             psEstadistica.setInt(1, mentoriaId);
@@ -58,7 +68,13 @@ public class EstadisticaDAO {
         return estadisticaId;
     }
 
-    // Asignar fase a mentoría actualizando la estadística (retorna true si tuvo éxito)
+    /**
+     * Actualiza la fase asignada a una mentoría en la tabla estadisticas_idea.
+     *
+     * @param mentoriaId ID de la mentoría.
+     * @param avanceFaseId ID del avance de fase a asignar.
+     * @return {@code true} si la actualización fue exitosa, {@code false} en caso contrario.
+     */
     public static boolean asignarFaseAMentoria(int mentoriaId, int avanceFaseId) {
         String sql = "UPDATE estadisticas_idea SET avance_fase_id = ? WHERE mentoria_id = ?";
         try (Connection conn = ConexionRailway.getConnection();
@@ -76,7 +92,11 @@ public class EstadisticaDAO {
         }
     }
 
-    // Listar fases disponibles
+    /**
+     * Obtiene todas las fases disponibles del proyecto.
+     *
+     * @return Lista de objetos {@link FaseProyecto}.
+     */
     public static List<FaseProyecto> obtenerFasesProyecto() {
         List<FaseProyecto> fases = new ArrayList<>();
         String sql = "SELECT id, fase FROM fases_proyecto";
@@ -100,7 +120,11 @@ public class EstadisticaDAO {
         return fases;
     }
 
-    // Listar estadísticas de un mentor (por mentor_id)
+    /**
+     * Lista todas las estadísticas registradas, ordenadas por ID descendente.
+     *
+     * @return Lista de objetos {@link EstadisticaIdea}.
+     */
     public static List<EstadisticaIdea> listarTodas() {
         List<EstadisticaIdea> lista = new ArrayList<>();
         String sql = "SELECT id, mentoria_id, avance_fase_id FROM estadisticas_idea ORDER BY id DESC";
@@ -125,6 +149,12 @@ public class EstadisticaDAO {
         return lista;
     }
 
+    /**
+     * Lista todas las estadísticas asociadas a una mentoría específica.
+     *
+     * @param mentoriaId ID de la mentoría.
+     * @return Lista de objetos {@link EstadisticaIdea}.
+     */
     public static List<EstadisticaIdea> listarPorMentoria(int mentoriaId) {
         List<EstadisticaIdea> lista = new ArrayList<>();
         String sql = "SELECT id, mentoria_id, avance_fase_id FROM estadisticas_idea WHERE mentoria_id = ? ORDER BY id DESC";
@@ -151,6 +181,12 @@ public class EstadisticaDAO {
         return lista;
     }
 
+    /**
+     * Busca una estadística por su ID.
+     *
+     * @param id ID de la estadística.
+     * @return Objeto {@link EstadisticaIdea} si se encuentra, o {@code null} si no.
+     */
     public static EstadisticaIdea buscarPorId(int id) {
         EstadisticaIdea estadistica = null;
         String sql = "SELECT id, mentoria_id, avance_fase_id FROM estadisticas_idea WHERE id = ?";
@@ -175,6 +211,13 @@ public class EstadisticaDAO {
 
         return estadistica;
     }
+
+    /**
+     * Obtiene el ID de una fase a partir de su nombre.
+     *
+     * @param nombreFase Nombre de la fase.
+     * @return ID de la fase, o -1 si no se encuentra.
+     */
     public static int obtenerFaseIdPorNombre(String nombreFase) {
         int id = -1;
         String sql = "SELECT id FROM fases_proyecto WHERE fase = ?::fase_enum LIMIT 1";
@@ -195,7 +238,15 @@ public class EstadisticaDAO {
         return id;
     }
 
-
+    /**
+     * Registra un avance en la tabla avance_fases con porcentaje y fecha específicos.
+     *
+     * @param ideaId ID de la idea de negocio.
+     * @param faseId ID de la fase.
+     * @param porcentaje Porcentaje de avance.
+     * @param fecha Fecha del avance en formato "yyyy-MM-dd HH:mm:ss".
+     * @return {@code true} si la inserción fue exitosa, {@code false} en caso contrario.
+     */
     public static boolean registrarAvance(int ideaId, int faseId, int porcentaje, String fecha) {
         String sql = "INSERT INTO avance_fases (idea_id, fase_id, porcentaje_avance, fecha_avance) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConexionRailway.getConnection();
@@ -215,6 +266,12 @@ public class EstadisticaDAO {
         }
     }
 
+    /**
+     * Lista todas las mentorías asociadas a un usuario (emprendedor).
+     *
+     * @param usuarioId ID del usuario.
+     * @return Lista de objetos {@link Mentoria}.
+     */
     public static List<Mentoria> listarMentoriasPorUsuario(int usuarioId) {
         List<Mentoria> mentorias = new ArrayList<>();
         String sql = """
@@ -252,8 +309,4 @@ public class EstadisticaDAO {
 
         return mentorias;
     }
-
-
-
-
 }
