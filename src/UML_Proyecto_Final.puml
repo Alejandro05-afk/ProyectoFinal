@@ -550,7 +550,6 @@ Mentoria "1" -- "1" Mentor
 Mentoria "1" -- "1" IdeaNegocio
 EstadisticaIdea --> Mentoria
 EstadisticaIdea --> FaseProyecto
-IdeaNegocio --> Categorias
 LogsSistema --> Usuario
 MentorDAO ..> PersonaDAO
 
