@@ -4,7 +4,7 @@ package Modelo;
  * Representa una observación realizada durante una mentoría.
  */
 public class Observacion {
-    private int id; // Suponiendo que la tabla tiene una PK llamada id
+    private int id;
     private int mentoriaId;
     private String comentario;
 

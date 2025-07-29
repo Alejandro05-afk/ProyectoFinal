@@ -1,0 +1,596 @@
+@startuml
+
+package conexion {
+    class ConexionRailway {
+        - URL: String = "jdbc:postgresql://crossover.proxy.rlwy.net:50424/railway"
+        - USER: String = "postgres"
+        - PASSWORD: String = "clKdPZgGHtQRvPFVnhTcHDTclHnlPBpM"
+        + getConnection(): Connection
+    }
+}
+
+package util {
+    interface Actualizable {
+        + actualizar(): void
+    }
+}
+
+package modelo {
+    class Categoria {
+        - int id
+        - String nombre
+        + Categoria(int id, String nombre)
+        + int getId()
+        + String getNombre()
+        + String toString()
+    }
+    class EstadisticaIdea {
+        - int id
+        - int mentoriaId
+        - int avanceFaseId
+        + EstadisticaIdea(int id, int mentoriaId, int avanceFaseId)
+        + int getId()
+        + int getMentoriaId()
+        + int getAvanceFaseId()
+        + void setId(int id)
+        + void setMentoriaId(int mentoriaId)
+        + void setAvanceFaseId(int avanceFaseId)
+    }
+    class FaseProyecto {
+        - int id
+        - String nombre
+        + FaseProyecto(int id, String nombre)
+        + int getId()
+        + String getNombre()
+    }
+    class IdeaNegocio {
+        - int id
+        - int usuarioId
+        - int categoriaId
+        - String titulo
+        - String descripcion
+        - String estado
+
+        + IdeaNegocio()
+        + IdeaNegocio(int id, int usuarioId, int categoriaId, String titulo, String descripcion, String estado)
+        + int getId()
+        + int getUsuarioId()
+        + int getCategoriaId()
+        + String getTitulo()
+        + String getDescripcion()
+        + String getEstado()
+        + void setId(int id)
+        + void setUsuarioId(int usuarioId)
+        + void setCategoriaId(int categoriaId)
+        + void setTitulo(String titulo)
+        + void setDescripcion(String descripcion)
+        + void setEstado(String estado)
+    }
+    class LogsSistema {
+        - int id
+        - int usuarioId
+        - String accion
+        - Timestamp fecha
+
+        + LogsSistema(int id, int usuarioId, String accion, Timestamp fecha)
+        + int getId()
+        + void setId(int id)
+        + int getUsuarioId()
+        + void setUsuarioId(int usuarioId)
+        + String getAccion()
+        + void setAccion(String accion)
+        + Timestamp getFecha()
+        + void setFecha(Timestamp fecha)
+    }
+    class Mentor {
+        - int mentorId
+        - int personaId
+        - String nombres
+        - String apellidos
+        - String especialidad
+
+        + Mentor(int mentorId, int personaId, String nombres, String apellidos, String especialidad)
+        + int getId()
+        + int getPersonaId()
+        + String getNombres()
+        + String getApellidos()
+        + String getEspecialidad()
+        + String getNombreCompleto()
+        + String toString()
+    }
+    class Mentoria {
+        - int id
+        - int ideaId
+        - int mentorId
+        - String fecha
+        - String estado
+
+        + Mentoria()
+        + Mentoria(int id, int ideaId, int mentorId, String fecha, String estado)
+        + int getId()
+        + void setId(int id)
+        + int getIdeaId()
+        + void setIdeaId(int ideaId)
+        + int getMentorId()
+        + void setMentorId(int mentorId)
+        + String getFecha()
+        + void setFecha(String fecha)
+        + String getEstado()
+        + void setEstado(String estado)
+    }
+    class Observacion {
+        - int id
+        - int mentoriaId
+        - String comentario
+
+        + Observacion()
+        + Observacion(int mentoriaId, String comentario)
+        + Observacion(int id, int mentoriaId, String comentario)
+        + int getId()
+        + void setId(int id)
+        + int getMentoriaId()
+        + void setMentoriaId(int mentoriaId)
+        + String getComentario()
+        + void setComentario(String comentario)
+    }
+
+    class Persona {
+        - int id
+        - String nombres
+        - String apellidos
+        - String correo
+        - String telefono
+        - String direccion
+
+        + Persona()
+        + Persona(String nombres, String apellidos, String correo, String telefono, String direccion)
+        + int getId()
+        + void setId(int id)
+        + String getNombres()
+        + void setNombres(String nombres)
+        + String getApellidos()
+        + void setApellidos(String apellidos)
+        + String getCorreo()
+        + void setCorreo(String correo)
+        + String getTelefono()
+        + void setTelefono(String telefono)
+        + String getDireccion()
+        + void setDireccion(String direccion)
+    }
+    class Usuario {
+        - int id
+        - int personaId
+        - String contraseña
+        - String rol
+        - String nombres
+        - String apellidos
+        - String correo
+        - Persona persona
+
+        + Usuario()
+        + Usuario(int personaId, String contraseña, String rol)
+        + int getId()
+        + void setId(int id)
+        + int getPersonaId()
+        + void setPersonaId(int personaId)
+        + String getContraseña()
+        + void setContraseña(String contraseña)
+        + String getRol()
+        + void setRol(String rol)
+        + String getNombres()
+        + void setNombres(String nombres)
+        + String getApellidos()
+        + void setApellidos(String apellidos)
+        + String getCorreo()
+        + void setCorreo(String correo)
+        + Persona getPersona()
+        + void setPersona(Persona persona)
+    }
+    class UsuarioCompleto {
+        - int id
+        - int personaId
+        - String nombres
+        - String apellidos
+        - String correo
+        - String telefono
+        - String direccion
+        - String rol
+
+        + UsuarioCompleto(int id, int personaId, String nombres, String apellidos,
+                         String correo, String telefono, String direccion, String rol)
+        + int getId()
+        + void setId(int id)
+        + int getPersonaId()
+        + void setPersonaId(int personaId)
+        + String getNombres()
+        + void setNombres(String nombres)
+        + String getApellidos()
+        + void setApellidos(String apellidos)
+        + String getCorreo()
+        + void setCorreo(String correo)
+        + String getTelefono()
+        + void setTelefono(String telefono)
+        + String getDireccion()
+        + void setDireccion(String direccion)
+        + String getRol()
+        + void setRol(String rol)
+    }
+}
+
+package dao {
+    class AvanceFaseDAO {
+        + insertarAvanceFase(ideaId: int, faseId: int, porcentajeAvance: int): int
+    }
+    class EstadisticaDAO {
+        + generarEstadisticaParaMentoria(mentoriaId: int, faseId: int): int
+        + asignarFaseAMentoria(mentoriaId: int, faseId: int): boolean
+        + obtenerFasesProyecto(): List<FaseProyecto>
+        + listarTodas(): List<EstadisticaIdea>
+        + listarPorMentoria(mentoriaId: int): List<EstadisticaIdea>
+        + buscarPorId(id: int): EstadisticaIdea
+        + obtenerFaseIdPorNombre(nombreFase: String): int
+        + registrarAvance(ideaId: int, faseId: int, porcentaje: int, fecha: String): boolean
+        + listarMentoriasPorUsuario(usuarioId: int): List<Mentoria>
+    }
+    class IdeaNegocioDAO {
+        + listarIdeas(): List<IdeaNegocio>
+        + buscarPorId(id: int): IdeaNegocio
+        + crear(idea: IdeaNegocio): boolean
+        + editar(idea: IdeaNegocio): boolean
+        + eliminar(id: int): boolean
+        + obtenerResultadosPorIdea(ideaId: int): List<String>
+        + obtenerEstadisticasPorIdea(ideaId: int): List<String>
+        + obtenerIdeasAsignadasAlMentor(mentorId: int): List<IdeaNegocio>
+        + registrarIdea(usuarioId: int, categoriaId: int, titulo: String, descripcion: String): boolean
+        + obtenerCategorias(): List<Categoria>
+        + listarIdeasPorUsuario(usuarioId: int): List<IdeaNegocio>
+        + obtenerUsuarioIdPorIdea(ideaId: int): int
+    }
+    class LogsSistemaDAO {
+        + insertarLog(usuarioId: int, accion: String): boolean
+        + registrarLog(usuarioId: int, accion: String): void
+        + obtenerTodosLosLogs(): List<String>
+    }
+    class MentorDAO {
+        + obtenerMentorIdPorPersonaId(personaId: int): Integer
+    }
+    class MentoriaDAO {
+        + obtenerMentores(): List<Mentor>
+        + asignarMentoria(ideaId: int, mentorId: int): void
+        + insertarMentoria(ideaId: int, mentorId: int, fechaTexto: String): void
+        + obtenerMentorias(): List<String>
+        + obtenerMentoriasPorMentor(mentorId: int): List<Mentoria>
+        + obtenerMentoriaIdPorIdea(ideaId: int): int
+        - obtenerEstadoId(estado: String): int
+    }
+    class ObservacionDAO {
+        + insertarObservacion(obs: Observacion): boolean
+        + listarPorMentoria(mentoriaId: int): List<Observacion>
+        + listarPorUsuario(usuarioId: int): List<Observacion>
+        + listarPorFecha(fecha: Date): List<Observacion>
+    }
+    class PersonaDAO {
+        + insertarPersona(persona: Persona): int
+        + obtenerIdPorCorreo(correo: String): int
+    }
+    class ReporteDAO {
+        + registrarReporte(resultadoId: int): boolean
+    }
+    class ResultadoDAO {
+        + insertarResultado(usuarioId: int, estadisticaId: int) : int
+        + obtenerResultadosPorUsuario(usuarioId: int) : List<String>
+        + obtenerResultadosDelMentor(mentorId: int) : List<String>
+    }
+    class UsuarioDAO {
+        + boolean insertarUsuario(Usuario usuario)
+        + Usuario verificarLogin(String correo, String contraseña, String rol)
+        + Usuario obtenerPorPersonaId(int personaId)
+        + List<Persona> listarUsuarios()
+        + Persona buscarPorNombre(String nombre)
+        + static List<UsuarioCompleto> buscarPorNombreConRol(String nombre)
+        + void editarCampo(int personaId, String campo, String nuevoValor)
+        + void eliminarUsuario(int personaId)
+        + List<UsuarioCompleto> listarUsuariosConRol()
+    }
+}
+
+package controlador {
+    class AvanceFaseController {
+        + registrarAvanceFase(ideaId: int, faseId: int, porcentajeAvance: int): int
+    }
+    class EstadisticaController {
+        + generarEstadistica(mentoriaId: int, faseId: int): int
+        + asignarFase(mentoriaId: int, faseId: int): boolean
+        + listarFases(): List<FaseProyecto>
+        + listarTodasEstadisticas(): List<EstadisticaIdea>
+        + listarPorMentoria(mentoriaId: int): List<EstadisticaIdea>
+        + buscarPorId(id: int): EstadisticaIdea
+        + obtenerFaseIdPorNombre(nombreFase: String): int
+        + registrarAvance(ideaId: int, faseId: int, porcentaje: int, fecha: String): boolean
+        + listarMentoriasPorUsuario(usuarioId: int): List<Mentoria>
+    }
+    class IdeaNegocioController {
+        + listarIdeas(): List<IdeaNegocio>
+        + listarIdeasPorUsuario(usuarioId: int): List<IdeaNegocio>
+        + buscarPorId(id: int): IdeaNegocio
+        + eliminar(id: int): boolean
+        + crear(idea: IdeaNegocio): boolean
+        + editar(idea: IdeaNegocio): boolean
+        + obtenerResultados(ideaId: int): List<String>
+        + obtenerEstadisticas(ideaId: int): List<String>
+        + obtenerLogs(): List<String>
+        + obtenerIdeasPorMentor(mentorId: int): List<IdeaNegocio>
+        + registrarIdea(usuarioId: int, categoriaId: int, titulo: String, descripcion: String): boolean
+        + listarCategorias(): List<Categoria>
+        + obtenerUsuarioIdPorIdea(ideaId: int): int
+          }
+    class LoginController {
+        + autenticarUsuario(correo: String, contraseña: String, rol: String): Usuario
+        + iniciarSesion(correo: String, contraseña: String, rol: String, loginFrame: JFrame): void
+        - lanzarDashboard(usuario: Usuario): void
+        }
+    class LogSistemaController {
+         + obtenerLogsComoTexto(): List<String>
+       }
+    class MentoriaController {
+            + obtenerMentores(): List<String>
+            + asignar(ideaId: int, mentorId: int): void
+            + crearMentoria(ideaId: int, mentorId: int, fecha: String): void
+            + obtenerMentoriasPorMentor(mentorId: int): List<Mentoria>
+            + obtenerMentoriaIdPorIdea(ideaId: int): int
+        }
+     class ObservacionController {
+            + agregarObservacion(mentoriaId: int, comentario: String): void
+            + listarPorMentoria(mentoriaId: int): List<Observacion>
+            + listarPorUsuario(usuarioId: int): List<Observacion>
+            + listarPorFecha(fecha: Date): List<Observacion>
+        }
+    class RegistroController {
+            + registrarCuenta(nombres: String, apellidos: String, correo: String, telefono: String,
+                             direccion: String, contraseña: String, rol: String): void
+        }
+    class ReporteController {
+        + registrarReporte(resultadoId: int): boolean
+    }
+    class ResultadoController {
+        + registrarResultado(usuarioId: int, estadisticaId: int): int
+        + obtenerResultadosDelMentor(mentorId: int): List<String>
+    }
+    class UsuarioController {
+        - usuarioDAO: UsuarioDAO
+        + UsuarioController()
+        + listarUsuariosConRol(): List<UsuarioCompleto>
+        + buscarPorNombreConRol(nombre: String): List<UsuarioCompleto>
+        + listarUsuarios(): List<Persona>
+        + buscarPorNombre(nombre: String): Persona
+        + editarCampo(personaId: int, campo: String, nuevoValor: String): void
+        + eliminar(personaId: int): void
+        + eliminarUsuario(personaId: int): void
+    }
+
+}
+
+package vista {
+    class DashboardEmprendedor {
+        - usuarioId: int
+        + DashboardEmprendedor(usuarioId: int)
+        - agregarListeners(): void
+        - cargarMisIdeas(): void
+        - cargarComboFases(): void
+        - cargarMentorias(): void
+        - asignarFase(): void
+    }
+    class CrearCuenta extends JFrame {
+        - JButton registrarButton
+        - JButton regresarButton
+        - JTextField textFieldNombre
+        - JTextField textFieldApellido
+        - JTextField textFieldCorreo
+        - JTextField textFieldTelefono
+        - JTextField textFieldDireccion
+        - JComboBox comboBoxRol
+        - JPasswordField passwordFieldContra
+        - JPanel CrearCuenta
+
+        + CrearCuenta()
+    }
+    class CrearCuentaDesdeAdmin extends JFrame {
+        - JButton registrarButton
+        - JButton regresarButton
+        - JTextField textFieldNombre
+        - JTextField textFieldApellido
+        - JTextField textFieldCorreo
+        - JTextField textFieldTelefono
+        - JTextField textFieldDireccion
+        - JComboBox comboBoxRol
+        - JPasswordField passwordFieldContra
+        - JPanel CrearCuenta
+        - int usuarioId
+
+        + CrearCuentaDesdeAdmin(usuarioId: int)
+    }
+    class CrearIdeaNegocio extends JFrame {
+            - JPanel panelCrearIdea
+            - JButton guardarIdeaButton
+            - JTextField textFieldTitulo
+            - JTextField textFieldDescripcion
+            - JComboBox<Categoria> comboBoxCotegorias
+            - int usuarioId
+            - Actualizable callback
+            + CrearIdeaNegocio(int usuarioId, Actualizable callback)
+            + cargarCategorias(): void
+            + agregarListeners(): void
+    }
+      class DashboardAdmin {
+        - panelAdmin: JPanel
+        - tabbedPane1: JTabbedPane
+        - tableUsuarios: JTable
+        - buscarButton: JButton
+        - crearButton: JButton
+        - editarButton: JButton
+        - eliminarButton: JButton
+        - tableIdeas: JTable
+        - buscarButton1: JButton
+        - eliminarButton1: JButton
+        - aprobarButton: JButton
+        - listLogs: JList<String>
+        - resultadosButton: JButton
+        - estadisticasButton: JButton
+        - salirButton: JButton
+        - ScrollTableUsuarios: JScrollPane
+        - usuarioActualId: int
+        - usuarioController: UsuarioController
+        - ideaNegocioController: IdeaNegocioController
+        - mentoriaController: MentoriaController
+        + DashboardAdmin(usuarioId: int)
+        - configurarEventos()
+        - cargarUsuarios()
+        - cargarIdeas()
+        - cargarLogs()
+      }
+       class DashboardEmprendedor {
+          - tabbedPane1: JTabbedPane
+          - panelEmprendedor: JPanel
+          - tableMisIdeas: JTable
+          - eliminarButton: JButton
+          - verObservacionesButton: JButton
+          - guardarButton: JButton
+          - comboBoxFase: JComboBox<String>
+          - textFieldID: JTextField
+          - textFieldPorcentaje: JTextField
+          - textFechaMentoria: JTextField
+          - salirbutton: JButton
+          - listMentorias: JList<String>
+          - registrarNuevaIdeaButton: JButton
+          - agragarEstadisticasButton: JButton
+          - textFieldFecha: JTextField
+          - usuarioId: int
+          + DashboardEmprendedor(usuarioId: int)
+          - agregarListeners()
+          - cargarMisIdeas()
+          - cargarComboFases()
+          - cargarMentorias()
+          - asignarFase()
+        }
+
+
+    class DashboardMentor {
+        - tabbedPane1: JTabbedPane
+        - panelMentor: JPanel
+        - tableideas: JTable
+        - mentoriasButton: JButton
+        - salirButton: JButton
+        - generarReporteButton: JButton
+        - tableMentorias: JTable
+        - observacionesButton: JButton
+        - estadisticasButton1: JButton
+        - resultadosButton: JButton
+        - agregarAvanceButton: JButton
+        - mentorId: int
+        - mentor: Usuario
+        + DashboardMentor(mentor: Usuario)
+        - cargarIdeasAsignadas()
+        - cargarMentorias()
+        - agendarMentoria()
+        - generarReporte()
+        - agregarObservacion()
+        - asignarFase()
+        - mostrarResultados()
+        - agregarAvanceFase()
+        - obtenerFaseIdSeleccionada(): int
+      }
+     class Login extends JFrame {
+        - textFieldUsuario: JTextField
+        - passwordField: JPasswordField
+        - comboBoxRol: JComboBox<String>
+        - ingresarButton: JButton
+        - crearCuentaButton: JButton
+        - Login: JPanel
+        + Login()
+      }
+}
+
+package main {
+    class Main {
+        + main(args: String[]): void
+    }
+}
+
+
+Main ..> Login
+Main ..> DashboardEmprendedor
+Main ..> DashboardMentor
+
+
+AvanceFaseController ..> AvanceFaseDAO
+EstadisticaController ..> EstadisticaDAO
+IdeaNegocioController ..> IdeaNegocioDAO
+LogSistemaController ..> LogsSistemaDAO
+MentoriaController ..> MentoriaDAO
+UsuarioController ..> UsuarioDAO
+
+
+DashboardEmprendedor ..> IdeaNegocioController
+DashboardEmprendedor ..> EstadisticaController
+DashboardEmprendedor ..> ObservacionDAO
+DashboardMentor ..> IdeaNegocioController
+DashboardMentor ..> MentoriaController
+DashboardMentor ..> EstadisticaController
+DashboardMentor ..> ResultadoController
+DashboardMentor ..> ReporteController
+DashboardMentor ..> ObservacionDAO
+Login ..> LoginController
+CrearCuenta ..> RegistroController
+CrearIdeaNegocio ..> IdeaNegocioController
+
+
+Usuario "1" -- "1" Persona : contiene
+UsuarioCompleto --|> Usuario
+Mentoria "1" -- "1" Mentor
+Mentoria "1" -- "1" IdeaNegocio
+EstadisticaIdea --> Mentoria
+EstadisticaIdea --> FaseProyecto
+IdeaNegocio --> Categorias
+LogsSistema --> Usuario
+MentorDAO ..> PersonaDAO
+
+
+MentoriaController ..> MentoriaDAO : usa
+MentoriaController ..> Mentor : devuelve
+MentoriaController ..> Mentoria : devuelve
+LogSistemaController ..> LogsSistemaDAO : usa
+ObservacionController ..> ObservacionDAO : usa
+ObservacionController ..> Observacion : crea y devuelve
+RegistroController ..> ConexionRailway : usa
+ReporteController ..> ReporteDAO : usa
+ResultadoController ..> ResultadoDAO : usa
+UsuarioController ..> UsuarioDAO : usa
+UsuarioController ..> UsuarioCompleto : devuelve
+UsuarioController ..> Persona : devuelve
+UsuarioDAO --> UsuarioCompleto
+UsuarioDAO --> Persona
+IdeaNegocioDAO ..> IdeaNegocio : usa
+IdeaNegocioDAO ..> Categoria : usa
+LogsSistemaDAO ..> ConexionRailway : usa
+MentoriaDAO ..> Mentor
+MentoriaDAO ..> Mentoria
+MentoriaDAO ..> ConexionRailway : usa
+ObservacionDAO ..> Observacion
+ObservacionDAO ..> ConexionRailway : usa
+PersonaDAO ..> Persona : usa
+PersonaDAO ..> ConexionRailway : usa
+ResultadoDAO ..> ConexionRailway : usa >
+UsuarioDAO ..> ConexionRailway : usa >
+UsuarioDAO ..> Usuario : usa >
+UsuarioDAO ..> Persona : usa >
+UsuarioDAO ..> UsuarioCompleto : usa >
+Usuario "1" -- "1" Persona : persona
+CrearCuenta ..> RegistroController : usa
+CrearCuenta ..> Login : crea instancia
+CrearCuentaDesdeAdmin ..> RegistroController : usa
+CrearCuentaDesdeAdmin ..> DashboardAdmin : crea instancia
+CrearIdeaNegocio --> IdeaNegocioController : usa
+CrearIdeaNegocio --> Categoria : "comboBoxCotegorias contiene"
+CrearIdeaNegocio ..|> Actualizable : callback
+
+@enduml
