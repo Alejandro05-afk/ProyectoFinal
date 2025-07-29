@@ -17,4 +17,4 @@ Usuario --> cris@gmai.com
 Credenciales emprendedor 
 Usuario --> sele@gmail.com
  Contraseña --> sel123
- o caulquier emrendedor que se agrege
+ o caulquier emprendedor que se agrege
