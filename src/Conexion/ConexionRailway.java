@@ -25,10 +25,13 @@ public class ConexionRailway {
      */
     public static Connection getConnection() {
         try {
+            Class.forName("org.postgresql.Driver"); // Forzar carga del driver
             return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Error de conexión: " + e.getMessage());
+            e.printStackTrace(); // Muestra más detalle del error
             return null;
         }
     }
+
 }
